@@ -1,0 +1,57 @@
+package se.andolf;
+
+public class Memory {
+
+    private int[] memory = new int[4096];
+
+    private int[] chip8Fontset = {
+            0xF0, 0x90, 0x90, 0x90, 0xF0,
+            0x20, 0x60, 0x20, 0x20, 0x70,
+            0xF0, 0x10, 0xF0, 0x80, 0xF0,
+            0xF0, 0x10, 0xF0, 0x10, 0xF0,
+            0x90, 0x90, 0xF0, 0x10, 0x10,
+            0xF0, 0x80, 0xF0, 0x10, 0xF0,
+            0xF0, 0x80, 0xF0, 0x90, 0xF0,
+            0xF0, 0x10, 0x20, 0x40, 0x40,
+            0xF0, 0x90, 0xF0, 0x90, 0xF0,
+            0xF0, 0x90, 0xF0, 0x10, 0xF0,
+            0xF0, 0x90, 0xF0, 0x90, 0x90,
+            0xE0, 0x90, 0xE0, 0x90, 0xE0,
+            0xF0, 0x80, 0x80, 0x80, 0xF0,
+            0xE0, 0x90, 0x90, 0x90, 0xE0,
+            0xF0, 0x80, 0xF0, 0x80, 0xF0,
+            0xF0, 0x80, 0xF0, 0x80, 0x80
+    };
+
+    public Memory() {
+        System.arraycopy(chip8Fontset, 0, memory, 80, 80);
+    }
+
+    public void loadData(byte[] data) {
+        for (int i = 0; i < data.length; i++) {
+            setByte(i + 512, (data[i] & 0xFF));
+        }
+
+//        System.out.println("Game Memory dump ------------------------------");
+//        for (int i = 512; i < size(); i++) {
+//            System.out.println(String.format("%04x", getByte(i) & 0xff));
+//        }
+
+    }
+
+    public int getByte(int index) {
+        return memory[index];
+    }
+
+    public void setByte(int index, int value) {
+        memory[index] = value;
+    }
+
+    public int size() {
+        return memory.length;
+    }
+
+    public int getOpcode(int pc) {
+        return (getByte(pc)) << 8 | getByte(pc + 1);
+    }
+}
