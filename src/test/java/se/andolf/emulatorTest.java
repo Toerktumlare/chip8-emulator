@@ -295,7 +295,7 @@ class emulatorTest {
 
     @DisplayName("code 8XY7 Stores the most significant bit of VX in VF and then shifts VX to the left by 1")
     @Test
-    void shouldTestOpcode0x8XYESetMost() {
+    void shouldTestOpcode0x8XYEMSBShouldBeOne() {
 
         byte[] data = {0x60, -0x01, -0x80, 0x0E};
 
@@ -304,6 +304,44 @@ class emulatorTest {
 
         assertEquals(1, register.get(0xF));
         assertEquals(254, register.get(0));
+    }
+
+    @DisplayName("code 8XY7 Stores the most significant bit of VX in VF and then shifts VX to the left by 1")
+    @Test
+    void shouldTestOpcode0x8XYEMSBShouldBeZero() {
+
+        byte[] data = {0x60, 0x01, -0x80, 0x0E};
+
+        memory.loadData(data);
+        emulate(data);
+
+        assertEquals(0, register.get(0xF));
+        assertEquals(2, register.get(0));
+    }
+
+    @DisplayName("code 9XY0 Skips the next instruction when VX doesn't equal VY")
+    @Test
+    void shouldTestOpcode0x9XY0SkipsNextInstruction() {
+
+        byte[] data = {0x60, 0x01, 0x61, 0x02, -0x70, 0x10};
+
+        memory.loadData(data);
+        emulate(data);
+
+        assertEquals(520, emulator.getPC());
+    }
+
+    @DisplayName("code 9XY0 Does not skip the next instruction when VX equal VY")
+    @Test
+    void shouldTestOpcode0x9XY0ShouldNotSkipsNextInstruction() {
+
+        byte[] data = {0x60, 0x01, 0x61, 0x01, -0x70, 0x10};
+
+        memory.loadData(data);
+        emulate(data);
+
+        assertEquals(518, emulator.getPC());
+
     }
 
     private void emulate(byte[] data) {

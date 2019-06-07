@@ -171,6 +171,13 @@ public class Emulator {
                 pc += 2;
                 break;
 
+            case 0x9000:
+                if(register.get(x) != register.get(y))
+                    pc += 4;
+                else
+                    pc += 2;
+                break;
+
         }
 
         // Update timers
