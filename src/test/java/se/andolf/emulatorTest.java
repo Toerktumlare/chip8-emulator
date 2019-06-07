@@ -344,6 +344,32 @@ class emulatorTest {
 
     }
 
+    @DisplayName("code ANNN Sets I to the address NNN")
+    @Test
+    void shouldTestOpcode0xANNNShouldSetItoNNN() {
+
+        byte[] data = {-0x51, -0x01};
+
+        memory.loadData(data);
+        emulate(data);
+
+        assertEquals(4095, emulator.getI());
+
+    }
+
+    @DisplayName("code BNNN Jumps to the address NNN plus V0.")
+    @Test
+    void shouldTestOpcode0xBNNNShouldJumpToNNNPlusVZero() {
+
+        byte[] data = {0x60, 0x01, -0x4E, 0x05};
+
+        memory.loadData(data);
+        emulate(data);
+
+        assertEquals(518, emulator.getPC());
+
+    }
+
     private void emulate(byte[] data) {
         for (int i = 0; i < (data.length / 2); i++) {
             emulator.emulateCycle();
