@@ -392,6 +392,19 @@ class emulatorTest {
 
     }
 
+    @DisplayName("code FX15 Sets the delay timer to VX")
+    @Test
+    void shouldTestOpcodeFX15SetDelayTimerToVX() {
+
+        byte[] data = { 0x60, 0x01, -0x10, 0x15 };
+
+        memory.loadData(data);
+        emulate(data);
+
+        assertEquals(1, emulator.getDelayTimer());
+
+    }
+
     private void emulate(byte[] data) {
         for (int i = 0; i < (data.length / 2); i++) {
             emulator.emulateCycle();

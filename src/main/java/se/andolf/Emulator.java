@@ -17,8 +17,8 @@ public class Emulator {
 
     private byte[] gfx = new byte[64 * 32];
 
-    private byte delay_timer;
-    private byte sound_timer;
+    private int delayTimer;
+    private int soundTimer;
 
     private Stack<Integer> stack = new Stack<>();
     private int sp;
@@ -199,13 +199,17 @@ public class Emulator {
                 break;
         }
 
-        // Update timers
-        if(delay_timer > 0)
-            --delay_timer;
+        switch (opcode & 0xF0FF) {
 
-        if(sound_timer > 0)  {
-            if(sound_timer == 1)
-                System.out.println("BEEP!\n");
+            case 0xF015:
+                this.delayTimer = register.get(x);
+                pc += 2;
+                break;
+
+            case 0xF018:
+                this.soundTimer = register.get(x);
+                pc += 2;
+                break;
         }
 
     }
@@ -228,5 +232,21 @@ public class Emulator {
 
     public int getI() {
         return I;
+    }
+
+    public int getDelayTimer() {
+        return delayTimer;
+    }
+
+    public void setDelayTimer(int delayTimer) {
+        this.delayTimer = delayTimer;
+    }
+
+    public int getSoundTimer() {
+        return soundTimer;
+    }
+
+    public void setSoundTimer(int soundTimer) {
+        this.soundTimer = soundTimer;
     }
 }
