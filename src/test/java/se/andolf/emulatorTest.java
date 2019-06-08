@@ -405,6 +405,19 @@ class emulatorTest {
 
     }
 
+    @DisplayName("code FX18 Sets the sound timer to VX")
+    @Test
+    void shouldTestOpcodeFX18SetSoundTimerToVX() {
+
+        byte[] data = { 0x60, 0x01, -0x10, 0x18 };
+
+        memory.loadData(data);
+        emulate(data);
+
+        assertEquals(1, emulator.getSoundTimer());
+
+    }
+
     private void emulate(byte[] data) {
         for (int i = 0; i < (data.length / 2); i++) {
             emulator.emulateCycle();
