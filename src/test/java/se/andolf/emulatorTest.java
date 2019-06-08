@@ -418,6 +418,19 @@ class emulatorTest {
 
     }
 
+    @DisplayName("code FX1E adds Vx to I")
+    @Test
+    void shouldTestOpcodeFX1EAddVxToI() {
+
+        byte[] data = { 0x60, 0x01, -0x10, 0x1E };
+
+        memory.loadData(data);
+        emulate(data);
+
+        assertEquals(1, emulator.getI());
+
+    }
+
     private void emulate(byte[] data) {
         for (int i = 0; i < (data.length / 2); i++) {
             emulator.emulateCycle();

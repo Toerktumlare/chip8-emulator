@@ -210,6 +210,11 @@ public class Emulator {
                 this.soundTimer = register.get(x);
                 pc += 2;
                 break;
+
+            case 0xF01E:
+                this.I += register.get(x);
+                pc += 2;
+                break;
         }
 
     }
@@ -249,4 +254,6 @@ public class Emulator {
     public void setSoundTimer(int soundTimer) {
         this.soundTimer = soundTimer;
     }
+
+
 }
