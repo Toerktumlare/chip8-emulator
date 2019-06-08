@@ -201,6 +201,11 @@ public class Emulator {
 
         switch (opcode & 0xF0FF) {
 
+            case 0xF007:
+                register.set(x, this.delayTimer);
+                pc += 2;
+                break;
+
             case 0xF015:
                 this.delayTimer = register.get(x);
                 pc += 2;
