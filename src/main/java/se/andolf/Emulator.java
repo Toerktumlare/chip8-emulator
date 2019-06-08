@@ -195,6 +195,7 @@ public class Emulator {
 
             case 0xC000:
                 register.set(x, random.nextInt(256) & (opcode & 0x00FF));
+                pc += 2;
                 break;
         }
 
