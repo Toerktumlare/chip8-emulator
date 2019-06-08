@@ -4,6 +4,7 @@ import se.andolf.utils.Utils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Random;
 
 public class Main {
 
@@ -13,7 +14,7 @@ public class Main {
         final byte[] gameData = Utils.load("/roms/tetris.c8");
         memory.loadData(gameData);
         final Register register = new Register();
-        final Emulator emulator = new Emulator(memory, register);
+        final Emulator emulator = new Emulator(memory, register, new Random());
 
         for(;;)
         {

@@ -1,11 +1,13 @@
 package se.andolf;
 
+import java.util.Random;
 import java.util.Stack;
 
 public class Emulator {
 
     private final Memory memory;
     private final Register register;
+    private final Random random;
 
     //Index register
     private int I;
@@ -25,10 +27,11 @@ public class Emulator {
 
     private boolean drawFlag;
 
-    public Emulator(Memory memory, Register register) {
+    public Emulator(Memory memory, Register register, Random random) {
 
         this.memory = memory;
         this.register = register;
+        this.random = random;
 
         pc = 0x200;
         I = 0;
@@ -188,6 +191,10 @@ public class Emulator {
 
             case 0xB000:
                 pc = (opcode & 0x0FFF) + register.get(0);
+                break;
+
+            case 0xC000:
+                register.set(x, random.nextInt(256) & (opcode & 0x00FF));
                 break;
         }
 

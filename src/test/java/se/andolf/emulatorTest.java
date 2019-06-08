@@ -4,20 +4,27 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Random;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class emulatorTest {
 
     private Emulator emulator;
     private Memory memory;
     private Register register;
+    private Random random;
 
     @BeforeEach
     void beforeEach() {
         memory = new Memory();
         register = new Register();
-        emulator = new Emulator(memory, register);
+        random = mock(Random.class);
+        emulator = new Emulator(memory, register, random);
     }
 
     @DisplayName("code 1XXX jumps to address NNN")
@@ -367,6 +374,21 @@ class emulatorTest {
         emulate(data);
 
         assertEquals(518, emulator.getPC());
+
+    }
+
+    @DisplayName("code CXNN Sets VX to the result of a bitwise and operation on a random number (Typically: 0 to 255) and NN.")
+    @Test
+    void shouldTestOpcode0xCXNNShouldSetVxToRandomNumberANDNN() {
+
+        byte[] data = { -0x40, 0x07 };
+
+        when(random.nextInt(anyInt())).thenReturn(85);
+
+        memory.loadData(data);
+        emulate(data);
+
+        assertEquals(5, register.get(0));
 
     }
 
