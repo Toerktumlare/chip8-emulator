@@ -1,18 +1,18 @@
 # Chip-8 Emulator
 
-This repo contains a Chip-8 emulator written in java.
+A Chip-8 emulator written in java.
 
 ![Space Invaders](/images/invaders.gif)
 
-Space Invaders
+_Space Invaders_
 
 ![Pong](/images/pong.png)
 
-Pong
+_Pong_
 
 ![TicTac](/images/tictac.png)
 
-TicTac
+_TicTac_
 
 CHIP-8 is an interpreted programming language, developed by [Joseph Weisbecker](https://en.wikipedia.org/wiki/Joseph_Weisbecker). It was initially used on the COSMAC VIP and Telmac 1800 8-bit microcomputers in the mid-1970s. CHIP-8 programs are run on a CHIP-8 virtual machine. It was made to allow video games to be more easily programmed for these computers.
 
@@ -130,15 +130,15 @@ The original implementation of the Chip-8 language used a 64x32-pixel monochrome
 It also stores a set of predefined sprites representing the hexadecimal numbers 0-F. Below is an example of how it stores numbers in memory.
 
 ```$xslt
-Number: 0                      Number: 1
+Number: 0                     Number: 1                     Number: 2
 
-"0"  | Binary   | Hex         "0"  | Binary   | Hex
------|----------|-----        -----|----------|-----
-**** | 11110000 | 0xF0          *  | 00100000 | 0xF0
-*  * | 11110000 | 0x90         **  | 01100000 | 0x90
-*  * | 11110000 | 0x90          *  | 00100000 | 0x90
-*  * | 11110000 | 0x90          *  | 00100000 | 0x90
-**** | 11110000 | 0xF0         *** | 01110000 | 0xF0
+"0"  | Binary   | Hex         "1"  | Binary   | Hex         "2"  | Binary   | Hex
+-----|----------|-----        -----|----------|-----        -----|----------|-----
+**** | 11110000 | 0xF0          *  | 00100000 | 0x20        **** | 11110000 | 0xF0
+*  * | 11110000 | 0x90         **  | 01100000 | 0x60           * | 00010000 | 0x10
+*  * | 11110000 | 0x90          *  | 00100000 | 0x20        **** | 11110000 | 0xF0
+*  * | 11110000 | 0x90          *  | 00100000 | 0x20        *    | 10000000 | 0x80
+**** | 11110000 | 0xF0         *** | 01110000 | 0x70        **** | 11110000 | 0xF0
 ```
 
 
