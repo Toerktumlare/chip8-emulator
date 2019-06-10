@@ -3,10 +3,13 @@
 This repo contains a Chip-8 emulator written in java.
 
 ![Space Invaders](/images/invaders.gif)
+Space Invaders
 
 ![Pong](/images/pong.png)
+Pong
 
-![TicTac](/images/tictack.png)
+![TicTac](/images/tictac.png)
+TicTac
 
 CHIP-8 is an interpreted programming language, developed by [Joseph Weisbecker](https://en.wikipedia.org/wiki/Joseph_Weisbecker). It was initially used on the COSMAC VIP and Telmac 1800 8-bit microcomputers in the mid-1970s. CHIP-8 programs are run on a CHIP-8 virtual machine. It was made to allow video games to be more easily programmed for these computers.
 
