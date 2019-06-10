@@ -77,7 +77,7 @@ public class Emulator implements Runnable {
     public void emulateCycle() {
 
         final int opcode = memory.getOpcode(pc);
-//        printOpcode(opcode);
+        System.out.println(Utils.getHex(opcode));
 
 
         int x = (opcode & 0x0F00) >>> 8;

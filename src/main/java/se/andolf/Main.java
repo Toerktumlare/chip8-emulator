@@ -9,7 +9,7 @@ public class Main {
     public static void main(String[] args) {
 
         final Memory memory = new Memory();
-        final byte[] gameData = Utils.load("/roms/pong2.c8");
+        final byte[] gameData = Utils.load("/roms/test/test_opcode.ch8");
 
         memory.loadData(gameData);
 
