@@ -19,4 +19,12 @@ public class Utils {
         }
         return b;
     }
+
+    public static int getBitValue(int value, int bitIndex) {
+        return value & (0x80 >> bitIndex);
+    }
+
+    public static String getHex(int value) {
+        return Integer.toHexString(value);
+    }
 }

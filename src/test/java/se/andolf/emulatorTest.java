@@ -24,7 +24,7 @@ class emulatorTest {
         memory = new Memory();
         register = new Register();
         random = mock(Random.class);
-        emulator = new Emulator(memory, register, random);
+        emulator = new Emulator(memory, register, random, null);
     }
 
     @DisplayName("code 1XXX jumps to address NNN")

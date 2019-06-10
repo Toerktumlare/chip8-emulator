@@ -5,6 +5,12 @@ import java.util.function.IntUnaryOperator;
 public class Register {
     private Integer[] V = new Integer[16];
 
+    public Register() {
+        for (int i = 0; i < 16; i++) {
+            V[i] = 0;
+        }
+    }
+
     public int get(int index) {
         return V[index];
     }
