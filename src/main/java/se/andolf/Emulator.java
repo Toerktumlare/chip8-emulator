@@ -373,7 +373,7 @@ public class Emulator implements Runnable {
         }
 
         try {
-            Thread.sleep(1L, 10000);
+            Thread.sleep(10L, 10000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
