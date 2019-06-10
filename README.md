@@ -2,17 +2,13 @@
 
 A Chip-8 emulator written in java.
 
-![Space Invaders](/images/invaders.gif)
-
-_Space Invaders_
+<p align="center">
+  <img width="460" height="300" src="/images/invaders.gif">
+</p>
 
 ![Pong](/images/pong.png)
 
-_Pong_
-
 ![TicTac](/images/tictac.png)
-
-_TicTac_
 
 CHIP-8 is an interpreted programming language, developed by [Joseph Weisbecker](https://en.wikipedia.org/wiki/Joseph_Weisbecker). It was initially used on the COSMAC VIP and Telmac 1800 8-bit microcomputers in the mid-1970s. CHIP-8 programs are run on a CHIP-8 virtual machine. It was made to allow video games to be more easily programmed for these computers.
 
@@ -145,12 +141,12 @@ Number: 0                     Number: 1                     Number: 2
 ## Compiling and running
 requires maven3 and java 11
 
-compile:
+**compile:**
 ```$xslt
 $ mvn clean install
 ```
 
-run:
+**run:**
 ```$xslt
 $ java -jar target/chip8-emulator-1.0-SNAPSHOT <romfile>
 
