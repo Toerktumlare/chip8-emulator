@@ -9,7 +9,7 @@ public class Main {
     public static void main(String[] args) {
 
         final Memory memory = new Memory();
-        final byte[] gameData = Utils.load("/roms/TICTAC.ch8");
+        final byte[] gameData = Utils.load("/roms/PONG2.ch8");
 
         memory.loadData(gameData);
 

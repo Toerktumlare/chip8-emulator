@@ -16,7 +16,7 @@ TicTac
 
 CHIP-8 is an interpreted programming language, developed by [Joseph Weisbecker](https://en.wikipedia.org/wiki/Joseph_Weisbecker). It was initially used on the COSMAC VIP and Telmac 1800 8-bit microcomputers in the mid-1970s. CHIP-8 programs are run on a CHIP-8 virtual machine. It was made to allow video games to be more easily programmed for these computers.
 
-### Memory
+## Memory
 The Chip-8 language is capable of accessing up to 4KB (4,096 bytes) of RAM, from location 0x000 (0) to 0xFFF (4095). 
 
 The first 512 bytes, from 0x000 to 0x1FF, are where the original interpreter was located, and should not be used by programs.
