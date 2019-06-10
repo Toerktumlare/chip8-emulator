@@ -3,12 +3,15 @@
 This repo contains a Chip-8 emulator written in java.
 
 ![Space Invaders](/images/invaders.gif)
+
 Space Invaders
 
 ![Pong](/images/pong.png)
+
 Pong
 
 ![TicTac](/images/tictac.png)
+
 TicTac
 
 CHIP-8 is an interpreted programming language, developed by [Joseph Weisbecker](https://en.wikipedia.org/wiki/Joseph_Weisbecker). It was initially used on the COSMAC VIP and Telmac 1800 8-bit microcomputers in the mid-1970s. CHIP-8 programs are run on a CHIP-8 virtual machine. It was made to allow video games to be more easily programmed for these computers.
@@ -46,7 +49,7 @@ Most Chip-8 programs start at location 0x200 (512), but some begin at 0x600 (153
 +---------------+= 0x000 (0) Start of Chip-8 RAM
 ```
 
-##Keyboard
+## Keyboard
 
 The original Chip-8 had a different keyboard layout but this one uses the following (most standard today) implementation.
 
@@ -87,7 +90,7 @@ Opcode	| Type	| C Pseudo	 | Explanation
 6XNN|	Const|	Vx = NN|	Sets VX to NN.
 7XNN|	Const|	Vx += NN|	Adds NN to VX. (Carry flag is not changed)
 8XY0|	Assign|	Vx=Vy|	Sets VX to the value of VY.
-8XY1|	BitOp|	Vx=Vx|Vy |	Sets VX to VX or VY. (Bitwise OR operation)
+8XY1|	BitOp|	Vx=Vx&#124;Vy |	Sets VX to VX or VY. (Bitwise OR operation)
 8XY2|	BitOp|	Vx=Vx&Vy|	Sets VX to VX and VY. (Bitwise AND operation)
 8XY3|	BitOp|	Vx=Vx^Vy|	Sets VX to VX xor VY.
 8XY4|	Math|	Vx += Vy|	Adds VY to VX. VF is set to 1 when there's a carry, and to 0 when there isn't.
