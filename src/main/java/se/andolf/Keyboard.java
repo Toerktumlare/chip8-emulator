@@ -138,4 +138,8 @@ public class Keyboard {
     public boolean isPressed(int index) {
         return keys[index];
     }
+
+    public boolean[] getKeys() {
+        return keys;
+    }
 }

@@ -271,6 +271,15 @@ public class Emulator implements Runnable {
 
         switch (opcode & 0xF0FF) {
 
+            case 0xF00A:
+                for (int i = 0; i < keyboard.getKeys().length; i++) {
+                    if(keyboard.isPressed(i)){
+                        register.set(x, i);
+                        pc += 2;
+                    }
+                }
+                break;
+
             case 0xF007:
                 register.set(x, this.delayTimer);
                 pc += 2;
