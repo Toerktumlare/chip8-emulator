@@ -4,20 +4,22 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 public class Utils {
 
-    public static byte[] load(String filename) {
+    public static Optional<byte[]> load(String filename) {
         final InputStream is = Utils.class.getResourceAsStream(filename);
         byte[] b = null;
         try (DataInputStream in = new DataInputStream(new BufferedInputStream(is))) {
             b = new byte[is.available()];
             in.read(b);
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (NullPointerException | IOException e) {
+            System.out.println("Could not load: " + filename);
+            System.out.println("Please check the spelling");
         }
-        return b;
+        return Optional.ofNullable(b);
     }
 
     public static int getBitValue(int value, int bitIndex) {

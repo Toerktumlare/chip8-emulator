@@ -1,7 +1,5 @@
 package se.andolf;
 
-import se.andolf.utils.Utils;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -25,7 +23,7 @@ public class Emulator implements Runnable, KeyListener {
     private final Screen screen;
 
 
-    public Emulator(String filename) {
+    public Emulator(byte[] gameData) {
 
         this.keyboard = new Keyboard();
 
@@ -33,7 +31,6 @@ public class Emulator implements Runnable, KeyListener {
         final Register register = new Register();
         final Random random = new Random();
 
-        final byte[] gameData = Utils.load(filename);
         memory.loadData(gameData);
 
 
