@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 
 class emulatorTest {
 
-    private Emulator emulator;
+    private CPU cpu;
     private Memory memory;
     private Register register;
     private Random random;
@@ -24,7 +24,7 @@ class emulatorTest {
         memory = new Memory();
         register = new Register();
         random = mock(Random.class);
-        emulator = new Emulator(memory, register, random, null);
+        cpu = new CPU(memory, register, random, null, null);
     }
 
     @DisplayName("code 1XXX jumps to address NNN")
@@ -47,7 +47,7 @@ class emulatorTest {
 
         emulate(data);
 
-        assertTrue(emulator.getDrawFlag());
+        assertTrue(cpu.getDrawFlag());
     }
 
     @DisplayName("code 3XNN Should skip the next instruction if VX == NN")
@@ -58,7 +58,7 @@ class emulatorTest {
         memory.loadData(data);
         emulate(data);
 
-        assertEquals(518, emulator.getPC());
+        assertEquals(518, cpu.getPC());
     }
 
     @DisplayName("code 3XNN Should NOT skip the next instruction if VX != NN")
@@ -69,7 +69,7 @@ class emulatorTest {
         memory.loadData(data);
         emulate(data);
 
-        assertEquals(516, emulator.getPC());
+        assertEquals(516, cpu.getPC());
     }
 
     @DisplayName("code 4XNN Should skip the next instruction if VX != NN")
@@ -80,7 +80,7 @@ class emulatorTest {
         memory.loadData(data);
         emulate(data);
 
-        assertEquals(518, emulator.getPC());
+        assertEquals(518, cpu.getPC());
     }
 
     @DisplayName("code 4XNN Should NOT skip the next instruction if VX == NN")
@@ -91,7 +91,7 @@ class emulatorTest {
         memory.loadData(data);
         emulate(data);
 
-        assertEquals(516, emulator.getPC());
+        assertEquals(516, cpu.getPC());
     }
 
     @DisplayName("code 5XY0 Skips the next instruction if VX == VY")
@@ -102,7 +102,7 @@ class emulatorTest {
         memory.loadData(data);
         emulate(data);
 
-        assertEquals(520, emulator.getPC());
+        assertEquals(520, cpu.getPC());
     }
 
     @DisplayName("code 5XY0 Does not skip the next instruction if VX != VY")
@@ -113,7 +113,7 @@ class emulatorTest {
         memory.loadData(data);
         emulate(data);
 
-        assertEquals(518, emulator.getPC());
+        assertEquals(518, cpu.getPC());
     }
 
     @DisplayName("code 6XXX set register to value")
@@ -156,46 +156,46 @@ class emulatorTest {
 
         memory.loadData(data);
 
-        emulator.emulateCycle();
+        cpu.emulateCycle();
         assertEquals("1", Integer.toHexString(register.get(0)));
 
-        emulator.emulateCycle();
+        cpu.emulateCycle();
         assertEquals("2", Integer.toHexString(register.get(0)));
     }
 
     @DisplayName("code 8XY1 Sets VX to VX or VY. (Bitwise OR operation)")
     @Test
     void shouldTestOpcode0x8XY1() {
-        byte[] data = {0x60, 0x01, -0x80, 0x21};
+        byte[] data = {0x60, 0x01, 0x61, 0x06, -0x80, 0x11};
 
         memory.loadData(data);
 
         emulate(data);
 
-        assertEquals("3", Integer.toHexString(register.get(0)));
+        assertEquals(7, register.get(0));
     }
 
     @DisplayName("code 8XY2 Sets VX to VX and VY. (Bitwise AND operation)")
     @Test
     void shouldTestOpcode0x8XY2() {
-        byte[] data = {0x60, 0x0B, -0x80, 0x62};
+        byte[] data = {0x60, 0x0C, 0x61, 0x06, -0x80, 0x12};
 
         memory.loadData(data);
 
         emulate(data);
 
-        assertEquals(2, register.get(0));
+        assertEquals(4, register.get(0));
     }
 
     @DisplayName("code 8XY3 Sets VX to VX xor VY.")
     @Test
     void shouldTestOpcode0x8XY3() {
-        byte[] data = {0x60, 0x09, -0x80, 0x63};
+        byte[] data = {0x60, 0x09, 0x61, 0x05, -0x80, 0x13};
 
         memory.loadData(data);
         emulate(data);
 
-        assertEquals(15, register.get(0));
+        assertEquals(12, register.get(0));
     }
 
     @DisplayName("code 8XY4 Adds VY to VX. VF is set to 0 when there's no carry.")
@@ -335,7 +335,7 @@ class emulatorTest {
         memory.loadData(data);
         emulate(data);
 
-        assertEquals(520, emulator.getPC());
+        assertEquals(520, cpu.getPC());
     }
 
     @DisplayName("code 9XY0 Does not skip the next instruction when VX equal VY")
@@ -347,7 +347,7 @@ class emulatorTest {
         memory.loadData(data);
         emulate(data);
 
-        assertEquals(518, emulator.getPC());
+        assertEquals(518, cpu.getPC());
 
     }
 
@@ -360,7 +360,7 @@ class emulatorTest {
         memory.loadData(data);
         emulate(data);
 
-        assertEquals(4095, emulator.getI());
+        assertEquals(4095, cpu.getI());
 
     }
 
@@ -373,7 +373,7 @@ class emulatorTest {
         memory.loadData(data);
         emulate(data);
 
-        assertEquals(518, emulator.getPC());
+        assertEquals(518, cpu.getPC());
 
     }
 
@@ -401,7 +401,7 @@ class emulatorTest {
         memory.loadData(data);
         emulate(data);
 
-        assertEquals(1, emulator.getDelayTimer());
+        assertEquals(1, cpu.getDelayTimer());
 
     }
 
@@ -414,7 +414,7 @@ class emulatorTest {
         memory.loadData(data);
         emulate(data);
 
-        assertEquals(1, emulator.getSoundTimer());
+        assertEquals(1, cpu.getSoundTimer());
 
     }
 
@@ -427,7 +427,7 @@ class emulatorTest {
         memory.loadData(data);
         emulate(data);
 
-        assertEquals(1, emulator.getI());
+        assertEquals(1, cpu.getI());
 
     }
 
@@ -435,7 +435,7 @@ class emulatorTest {
     @Test
     void shouldTestOpcodeFX07SetVxToTheDelayTimer() {
 
-        emulator.setDelayTimer(1);
+        cpu.setDelayTimer(1);
         byte[] data = { -0x10, 0x07 };
 
         memory.loadData(data);
@@ -447,7 +447,7 @@ class emulatorTest {
 
     private void emulate(byte[] data) {
         for (int i = 0; i < (data.length / 2); i++) {
-            emulator.emulateCycle();
+            cpu.emulateCycle();
         }
     }
 }
