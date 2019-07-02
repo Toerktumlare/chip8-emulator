@@ -15,8 +15,8 @@ public class Register {
         return V[index];
     }
 
-    public void set(int index, int to) {
-        V[index] = to;
+    public void set(int index, int value) {
+        V[index] = value;
     }
 
     public void apply(int index, IntUnaryOperator func) {

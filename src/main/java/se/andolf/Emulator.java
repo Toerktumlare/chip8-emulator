@@ -4,10 +4,12 @@ import se.andolf.utils.Utils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.Random;
 import java.util.Stack;
 
-public class Emulator implements Runnable {
+public class Emulator implements Runnable, KeyListener {
 
     private static final int WIDTH = 64;
     private static final int HEIGHT = 32;
@@ -54,6 +56,7 @@ public class Emulator implements Runnable {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         frame.setAlwaysOnTop(true);
+        frame.addKeyListener(this);
 
         pc = 0x200;
         I = 0;
@@ -249,27 +252,41 @@ public class Emulator implements Runnable {
                             int xCoord = (register.get(x) + xLine);
                             int yCoord = (register.get(y) + yLine) ;
 
-                            if (xCoord < WIDTH && yCoord < HEIGHT) {
+                            if(xCoord >= WIDTH )
+                                xCoord %= WIDTH;
 
-                                if (screen.getPixel(xCoord, yCoord) == 1)
-                                    register.set(0xF, 1);
+                            if(yCoord >= HEIGHT)
+                                yCoord %= HEIGHT;
 
-                                screen.setPixel(xCoord, yCoord);
-                            }
+                            if (screen.getPixel(xCoord, yCoord) == 1)
+                                register.set(0xF, 1);
+
+                            screen.setPixel(xCoord, yCoord);
                         }
                     }
                 }
                 drawFlag = true;
                 pc += 2;
                 break;
-
-            case 0xE000:
-                //TODO: Implement opcode
-                pc += 4;
-                break;
         }
 
         switch (opcode & 0xF0FF) {
+
+            case 0xE09E:
+                if(keyboard.isPressed(register.get(x))) {
+                    pc += 4;
+                } else {
+                    pc += 2;
+                }
+                break;
+
+            case 0xE0A1:
+                if(!keyboard.isPressed(register.get(x))) {
+                    pc += 4;
+                } else {
+                    pc += 2;
+                }
+                break;
 
             case 0xF00A:
                 for (int i = 0; i < keyboard.getKeys().length; i++) {
@@ -370,7 +387,6 @@ public class Emulator implements Runnable {
 
     private void render() {
 
-
         if(drawFlag) {
             screen.render();
             drawFlag = false;
@@ -382,7 +398,7 @@ public class Emulator implements Runnable {
         }
 
         try {
-            Thread.sleep(10L, 10000);
+            Thread.sleep(1L, 10000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -390,5 +406,20 @@ public class Emulator implements Runnable {
 
     private void update() {
         emulateCycle();
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        // Not used
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        keyboard.onKeyPressed(e.getKeyCode());
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        keyboard.onKeyReleased(e.getKeyCode());
     }
 }
