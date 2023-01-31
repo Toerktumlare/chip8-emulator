@@ -1,7 +1,7 @@
 
 public static class Utils {
 
-    public static Optional<byte[]> Load(string filename) {
+    public static Option<byte[]> Load(string filename) {
         // final InputStream is = Utils.class.getResourceAsStream(filename);
         // byte[] b = null;
         // try (DataInputStream in = new DataInputStream(new BufferedInputStream(is))) {
@@ -16,11 +16,13 @@ public static class Utils {
         return None.Value;
     }
 
-    public static int getBitValue(int value, int bitIndex) {
-        return value & (0x80 >> bitIndex);
+    public static int GetBitValue(int value, int bitIndex) {
+        //return value & (0x80 >> bitIndex);
+        return 0;
     }
 
-    public static String getHex(int value) {
-        return Integer.toHexString(value);
+    public static string GetHex(int value) {
+        // return Integer.toHexString(value);
+        return string.Empty;
     }
 }

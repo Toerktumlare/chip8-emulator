@@ -1,5 +1,7 @@
-public class Program {
+namespace Chip8;
 
+public class Program 
+{
     public static int Main(string[] args) {
 
         if(args.Length == 0) {
@@ -7,12 +9,11 @@ public class Program {
             return 1;
         } else {
             return Utils.Load(args[0])
-                .Select(bytes => {
-            //     final Emulator emulator = new Emulator(bytes);
-            //     emulator.start();
+                .Map(bytes => {
+                    var emulator = new Chip8.Emulator(bytes);
+                    emulator.Start();
                     return 0; })
-                .DefaultIfEmpty( () => 1)
-                .Single();
+                .Reduce( () => 1);
         }
     }
 }
