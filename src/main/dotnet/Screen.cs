@@ -15,6 +15,9 @@ public class Screen
         //SetPreferredSize(new Dimension(this.width * this.scale, this.height * this.scale));
     }
 
+    public int Width => width;
+    public int Height => height;
+
     public void Clear() {
         for (int y = 0; y < this.height; y++) {
             for (int x = 0; x < this.width; x++) {
