@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\main\dotnet\Emulator.csproj" />
+    <ProjectReference Include="..\..\main\dotnet\Emulator\Emulator.csproj" />
   </ItemGroup>
 
 </Project>
