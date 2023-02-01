@@ -11,7 +11,7 @@ public class Program
             return Utils.Load(args[0])
                 .Map(bytes => {
                     var emulator = new Chip8.Emulator(bytes);
-                    emulator.Start();
+                    emulator.Run();
                     return 0; })
                 .Reduce( () => 1);
         }
