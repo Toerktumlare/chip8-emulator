@@ -10,6 +10,7 @@ public class Screen : DrawableGameComponent, Chip8.IScreen
     private Texture2D canvas;
     private Rectangle tracedSize;
     private SpriteBatch? spriteBatch;
+    RenderTarget2D target;
     
     public Screen(Game game, int width, int height, int scale) : base(game) {
         this.width = width;
@@ -20,6 +21,8 @@ public class Screen : DrawableGameComponent, Chip8.IScreen
 
         tracedSize = new Rectangle(0,0, width, height);
         canvas = new Texture2D(GraphicsDevice, tracedSize.Width, tracedSize.Height, false, SurfaceFormat.Color);
+
+        target = new RenderTarget2D(GraphicsDevice, width, height);
     }
 
     public int Width => width;
@@ -48,9 +51,18 @@ public class Screen : DrawableGameComponent, Chip8.IScreen
 
     public override void Draw(GameTime gameTime)
     {
+        GraphicsDevice.SetRenderTarget(target);
+        GraphicsDevice.Clear(Color.Black);
+
         spriteBatch.Begin();
-        spriteBatch.GraphicsDevice.BlendState = BlendState.Opaque;
-        spriteBatch.Draw(canvas, Vector2.Zero, new Rectangle(0, 0, tracedSize.Width, tracedSize.Height), Color.White, 0.0f, Vector2.Zero, this.scale, SpriteEffects.None, 0);
+        spriteBatch.Draw(canvas, new Rectangle(0, 0, tracedSize.Width, tracedSize.Height), Color.White);
+        spriteBatch.End();
+
+        GraphicsDevice.SetRenderTarget(null);
+        GraphicsDevice.Clear(Color.Black);
+
+        spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+        spriteBatch.Draw(target, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
         spriteBatch.End();
 
         base.Draw(gameTime);

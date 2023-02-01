@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+using Input = Microsoft.Xna.Framework.Input;
 
 namespace Chip8;
 
@@ -15,10 +15,13 @@ public class Emulator : Game
     private Chip8.CPU cpu;
     private readonly Chip8.Keyboard keyboard;
     private readonly Chip8.Memory memory;
+    private Input.KeyboardState oldState;
     public Emulator(byte[] gameData)
     {
         graphics = new GraphicsDeviceManager(this);
-        Content.RootDirectory = "Content";
+        graphics.IsFullScreen = false;
+        graphics.PreferredBackBufferHeight = 320;
+        graphics.PreferredBackBufferWidth = 640;
         IsMouseVisible = true;
 
         this.keyboard = new Chip8.Keyboard();
@@ -36,19 +39,45 @@ public class Emulator : Game
         var register = new Chip8.Register();
         this.cpu = new Chip8.CPU(this.memory, register, random, this.keyboard, screen);
 
+        GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap; 
         base.Initialize();
     }
 
     protected override void Update(GameTime gameTime)
     {
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Microsoft.Xna.Framework.Input.Keyboard.GetState().IsKeyDown(Keys.Escape))
+        if (Input.GamePad.GetState(PlayerIndex.One).Buttons.Back == Input.ButtonState.Pressed || Input.Keyboard.GetState().IsKeyDown(Input.Keys.Escape))
             Exit();
         
-        // if(Keyboard.GetState().IsKeyDown())
+        var state = Input.Keyboard.GetState();
+        TestKey(Input.Keys.NumPad1, oldState, state);
+        TestKey(Input.Keys.NumPad2, oldState, state);
+        TestKey(Input.Keys.NumPad3, oldState, state);
+        TestKey(Input.Keys.NumPad4, oldState, state);
+        TestKey(Input.Keys.Q, oldState, state);
+        TestKey(Input.Keys.W, oldState, state);
+        TestKey(Input.Keys.E, oldState, state);
+        TestKey(Input.Keys.R, oldState, state);
+        TestKey(Input.Keys.A, oldState, state);
+        TestKey(Input.Keys.S, oldState, state);
+        TestKey(Input.Keys.D, oldState, state);
+        TestKey(Input.Keys.F, oldState, state);
+        TestKey(Input.Keys.Z, oldState, state);
+        TestKey(Input.Keys.X, oldState, state);
+        TestKey(Input.Keys.C, oldState, state);
+        TestKey(Input.Keys.V, oldState, state);
 
         cpu.EmulateCycle();
 
         base.Update(gameTime);
+        oldState = state;
+    }
+
+    private void TestKey(Input.Keys key, Input.KeyboardState oldState, Input.KeyboardState newState) {
+        if(oldState.IsKeyUp(key) && newState.IsKeyDown(key)) {
+            keyboard.OnKeyPressed((int)key);
+        } else if(oldState.IsKeyDown(key) && newState.IsKeyUp(key)) {
+            keyboard.OnKeyReleased((int)key);
+        }        
     }
 
 
@@ -61,11 +90,7 @@ public class Emulator : Game
     // }
 
     protected override void Draw(GameTime gameTime)
-    {
-        GraphicsDevice.Clear(Color.CornflowerBlue);
-
-        GraphicsDevice.Textures[0] = null;
-        
+    {        
         base.Draw(gameTime);
     }
 }

@@ -41,7 +41,7 @@ public class CPU
     public void EmulateCycle() 
     {
         int opcode = memory.GetOpcode(pc);
-        Console.WriteLine(Utils.GetHex(opcode));
+        // Console.WriteLine(Utils.GetHex(opcode));
 
 
         int x = (opcode & 0x0F00) >>> 8;
