@@ -49,10 +49,10 @@ public class Emulator : Game
             Exit();
         
         var state = Input.Keyboard.GetState();
-        TestKey(Input.Keys.NumPad1, oldState, state);
-        TestKey(Input.Keys.NumPad2, oldState, state);
-        TestKey(Input.Keys.NumPad3, oldState, state);
-        TestKey(Input.Keys.NumPad4, oldState, state);
+        TestKey(Input.Keys.D1, oldState, state);
+        TestKey(Input.Keys.D2, oldState, state);
+        TestKey(Input.Keys.D3, oldState, state);
+        TestKey(Input.Keys.D4, oldState, state);
         TestKey(Input.Keys.Q, oldState, state);
         TestKey(Input.Keys.W, oldState, state);
         TestKey(Input.Keys.E, oldState, state);
