@@ -10,7 +10,7 @@ public class EmulatorTest
     public EmulatorTest() {
         memory = new Memory();
         register = new Register();
-//        random = mock(Random.class);
+        random = new Random();
         cpu = new Chip8.CPU(memory, register, random, null, null);
     }
 
@@ -24,410 +24,378 @@ public class EmulatorTest
         Assert.Equal("1", register.Get(0).ToString("X"));
     }
 
-    //
     [Fact(DisplayName = "code 2XXX jump to subroutine")]
     void ShouldTestOpcode0x2XXX() {
 
-        byte[] data = {0x22, 0x02, 0x00, -0x12};
+        //byte[] data = {0x22, 0x02, 0x00, -0x12};
+        byte[] data = {0x22, 0x02, 0x00, 256 + -0x12};
         memory.LoadData(data);
 
-        emulate(data);
+        Emulate(data);
 
-        Assert.True(cpu.getDrawFlag());
+        Assert.True(cpu.DrawFlag);
     }
 
-    @DisplayName("code 3XNN Should skip the next instruction if VX == NN")
-    @Test
-    void shouldSkipNextInstruction() {
+    [Fact(DisplayName = "code 3XNN Should skip the next instruction if VX == NN")]
+    void ShouldSkipNextInstruction() {
         byte[] data = {0x60, 0x01, 0x30, 0x01};
 
-        memory.loadData(data);
-        emulate(data);
+        memory.LoadData(data);
+        Emulate(data);
 
-        assertEquals(518, cpu.getPC());
+        Assert.Equal(518, cpu.PC);
     }
 
-    @DisplayName("code 3XNN Should NOT skip the next instruction if VX != NN")
-    @Test
-    void shouldNotSkipNextInstruction() {
+    [Fact(DisplayName = "code 3XNN Should NOT skip the next instruction if VX != NN")]
+    void ShouldNotSkipNextInstruction() {
         byte[] data = {0x60, 0x01, 0x30, 0x02};
 
-        memory.loadData(data);
-        emulate(data);
+        memory.LoadData(data);
+        Emulate(data);
 
-        assertEquals(516, cpu.getPC());
+        Assert.Equal(516, cpu.PC);
     }
 
-    @DisplayName("code 4XNN Should skip the next instruction if VX != NN")
-    @Test
-    void shouldSkipNextInstructionIfNotEquals() {
+    [Fact(DisplayName = "code 4XNN Should skip the next instruction if VX != NN")]
+    void ShouldSkipNextInstructionIfNotEquals() {
         byte[] data = {0x60, 0x01, 0x40, 0x02};
 
-        memory.loadData(data);
-        emulate(data);
+        memory.LoadData(data);
+        Emulate(data);
 
-        assertEquals(518, cpu.getPC());
+        Assert.Equal(518, cpu.PC);
     }
 
-    @DisplayName("code 4XNN Should NOT skip the next instruction if VX == NN")
-    @Test
-    void shouldNotSkipNextInstructionIfEquals() {
+    [Fact(DisplayName = "code 4XNN Should NOT skip the next instruction if VX == NN")]
+    void ShouldNotSkipNextInstructionIfEquals() {
         byte[] data = {0x60, 0x01, 0x40, 0x01};
 
-        memory.loadData(data);
-        emulate(data);
+        memory.LoadData(data);
+        Emulate(data);
 
-        assertEquals(516, cpu.getPC());
+        Assert.Equal(516, cpu.PC);
     }
 
-    @DisplayName("code 5XY0 Skips the next instruction if VX == VY")
-    @Test
-    void shouldSkipNextInstructionIfVxEqualsVy() {
+    [Fact(DisplayName = "code 5XY0 Skips the next instruction if VX == VY")]
+    void ShouldSkipNextInstructionIfVxEqualsVy() {
         byte[] data = {0x60, 0x01, 0x61, 0x01, 0x50, 0x10};
 
-        memory.loadData(data);
-        emulate(data);
+        memory.LoadData(data);
+        Emulate(data);
 
-        assertEquals(520, cpu.getPC());
+        Assert.Equal(520, cpu.PC);
     }
 
-    @DisplayName("code 5XY0 Does not skip the next instruction if VX != VY")
-    @Test
-    void shouldNotSkipNextInstructionIfVxNotEqualsVy() {
+    [Fact(DisplayName = "code 5XY0 Does not skip the next instruction if VX != VY")]
+    void ShouldNotSkipNextInstructionIfVxNotEqualsVy() {
         byte[] data = {0x60, 0x01, 0x61, 0x02, 0x50, 0x10};
 
-        memory.loadData(data);
-        emulate(data);
+        memory.LoadData(data);
+        Emulate(data);
 
-        assertEquals(518, cpu.getPC());
+        Assert.Equal(518, cpu.PC);
     }
 
-    @DisplayName("code 6XXX set register to value")
-    @Test
-    void shouldTestOpcode0x6000() {
+    [Fact(DisplayName = "code 6XXX set register to value")]
+    void ShouldTestOpcode0x6000() {
         byte[] data = {0x60, 0x01};
 
-        memory.loadData(data);
-        emulate(data);
+        memory.LoadData(data);
+        Emulate(data);
 
-        assertEquals("1", Integer.toHexString(register.get(0)));
+        Assert.Equal("1", register.Get(0).ToString("X"));
     }
 
-    @DisplayName("code 7XNN Adds NN to VX")
-    @Test
-    void shouldAddValueToValueInRegistry() {
+    [Fact(DisplayName = "code 7XNN Adds NN to VX")]
+    void ShouldAddValueToValueInRegistry() {
         byte[] data = {0x60, 0x01, 0x70, 0x01};
 
-        memory.loadData(data);
-        emulate(data);
+        memory.LoadData(data);
+        Emulate(data);
 
-        assertEquals(2, register.get(0));
+        Assert.Equal(2, register.Get(0));
     }
 
-    @DisplayName("code 7XNN Adds NN to VX and resolves overflow (Carry flag is not changed)")
-    @Test
-    void shouldAddValueToValueInRegistryAndResolveOverflow() {
-        byte[] data = {0x60, -0x01, 0x70, -0x01};
+    [Fact(DisplayName = "code 7XNN Adds NN to VX and resolves overflow (Carry flag is not changed)")]
+    void ShouldAddValueToValueInRegistryAndResolveOverflow() {
+        byte[] data = {0x60, 256 + -0x01, 0x70, 256 + -0x01};
 
-        memory.loadData(data);
-        emulate(data);
+        memory.LoadData(data);
+        Emulate(data);
 
-        assertEquals(254, register.get(0));
+        Assert.Equal(254, register.Get(0));
     }
 
-    @DisplayName("code 8XY0 Sets VX to the value of VY.")
-    @Test
-    void shouldTestOpcode0x8XY0() {
-        byte[] data = {0x60, 0x01, -0x80, 0x20};
+    [Fact(DisplayName = "code 8XY0 Sets VX to the value of VY.")]
+    void ShouldTestOpcode0x8XY0() {
+        byte[] data = {0x60, 0x01, 256 + -0x80, 0x20};
 
-        memory.loadData(data);
+        memory.LoadData(data);
 
-        cpu.emulateCycle();
-        assertEquals("1", Integer.toHexString(register.get(0)));
+        cpu.EmulateCycle();
+        Assert.Equal("1", register.Get(0).ToString("X"));
 
-        cpu.emulateCycle();
-        assertEquals("2", Integer.toHexString(register.get(0)));
+        cpu.EmulateCycle();
+        Assert.Equal("2", register.Get(0).ToString("X"));
     }
 
-    @DisplayName("code 8XY1 Sets VX to VX or VY. (Bitwise OR operation)")
-    @Test
-    void shouldTestOpcode0x8XY1() {
-        byte[] data = {0x60, 0x01, 0x61, 0x06, -0x80, 0x11};
+    [Fact(DisplayName = "code 8XY1 Sets VX to VX or VY. (Bitwise OR operation)")]
+    void ShouldTestOpcode0x8XY1() {
+        byte[] data = {0x60, 0x01, 0x61, 0x06, 256 + -0x80, 0x11};
 
-        memory.loadData(data);
+        memory.LoadData(data);
 
-        emulate(data);
+        Emulate(data);
 
-        assertEquals(7, register.get(0));
+        Assert.Equal(7, register.Get(0));
     }
 
-    @DisplayName("code 8XY2 Sets VX to VX and VY. (Bitwise AND operation)")
-    @Test
-    void shouldTestOpcode0x8XY2() {
-        byte[] data = {0x60, 0x0C, 0x61, 0x06, -0x80, 0x12};
+    [Fact(DisplayName = "code 8XY2 Sets VX to VX and VY. (Bitwise AND operation)")]
+    void ShouldTestOpcode0x8XY2() {
+        byte[] data = {0x60, 0x0C, 0x61, 0x06, 256 + -0x80, 0x12};
 
-        memory.loadData(data);
+        memory.LoadData(data);
 
-        emulate(data);
+        Emulate(data);
 
-        assertEquals(4, register.get(0));
+        Assert.Equal(4, register.Get(0));
     }
 
-    @DisplayName("code 8XY3 Sets VX to VX xor VY.")
-    @Test
-    void shouldTestOpcode0x8XY3() {
-        byte[] data = {0x60, 0x09, 0x61, 0x05, -0x80, 0x13};
+    [Fact(DisplayName = "code 8XY3 Sets VX to VX xor VY.")]
+    void ShouldTestOpcode0x8XY3() {
+        byte[] data = {0x60, 0x09, 0x61, 0x05, 256 + -0x80, 0x13};
 
-        memory.loadData(data);
-        emulate(data);
+        memory.LoadData(data);
+        Emulate(data);
 
-        assertEquals(12, register.get(0));
+        Assert.Equal(12, register.Get(0));
     }
 
-    @DisplayName("code 8XY4 Adds VY to VX. VF is set to 0 when there's no carry.")
-    @Test
-    void shouldTestOpcode0x8XY4NoCarrySetRegisterFtoZero() {
-        byte[] data = {0x60, 0x01, 0x61, 0x01, -0x80, 0x14};
+    [Fact(DisplayName = "code 8XY4 Adds VY to VX. VF is set to 0 when there's no carry.")]
+    void ShouldTestOpcode0x8XY4NoCarrySetRegisterFtoZero() {
+        byte[] data = {0x60, 0x01, 0x61, 0x01, 256 + -0x80, 0x14};
 
-        memory.loadData(data);
-        emulate(data);
+        memory.LoadData(data);
+        Emulate(data);
 
-        assertEquals(2, register.get(0));
-        assertEquals(0, register.get(0xF));
+        Assert.Equal(2, register.Get(0));
+        Assert.Equal(0, register.Get(0xF));
     }
 
-    @DisplayName("code 8XY4 Adds VY to VX. VF is set to 1 when there's a carry")
-    @Test
-    void shouldTestOpcode0x8XY4WithCarrySetRegisterFtoOne() {
-        byte[] data = {0x60, -0x0F, 0x61, -0x0F, -0x80, 0x14};
+    [Fact(DisplayName = "code 8XY4 Adds VY to VX. VF is set to 1 when there's a carry")]
+    void ShouldTestOpcode0x8XY4WithCarrySetRegisterFtoOne() {
+        byte[] data = {0x60, 256 + -0x0F, 0x61, 256 + -0x0F, 256 + -0x80, 0x14};
 
-        memory.loadData(data);
-        emulate(data);
+        memory.LoadData(data);
+        Emulate(data);
 
-        assertEquals(226, register.get(0));
-        assertEquals(1, register.get(0xF));
+        Assert.Equal(226, register.Get(0));
+        Assert.Equal(1, register.Get(0xF));
     }
 
-    @DisplayName("code 8XY5 VY is subtracted from VX. VF is set to 1 when there's no borrow")
-    @Test
-    void shouldTestOpcode0x8XY5IfSumIsNonNegativeValue() {
-        byte[] data = {0x60, 0x03, 0x61, 0x02, -0x80, 0x15};
+    [Fact(DisplayName = "code 8XY5 VY is subtracted from VX. VF is set to 1 when there's no borrow")]
+    void ShouldTestOpcode0x8XY5IfSumIsNonNegativeValue() {
+        byte[] data = {0x60, 0x03, 0x61, 0x02, 256 + -0x80, 0x15};
 
-        memory.loadData(data);
-        emulate(data);
+        memory.LoadData(data);
+        Emulate(data);
 
-        assertEquals(1, register.get(0));
-        assertEquals(1, register.get(0xF));
+        Assert.Equal(1, register.Get(0));
+        Assert.Equal(1, register.Get(0xF));
     }
 
-    @DisplayName("code 8XY5 VY is subtracted from VX. VF is set to 1 when there's no borrow")
-    @Test
-    void shouldTestOpcode0x8XY5IfSumIsNegativeValue() {
-        byte[] data = {0x60, 0x02, 0x61, 0x03, -0x80, 0x15};
+    [Fact(DisplayName = "code 8XY5 VY is subtracted from VX. VF is set to 1 when there's no borrow")]
+    void ShouldTestOpcode0x8XY5IfSumIsNegativeValue() {
+        byte[] data = {0x60, 0x02, 0x61, 0x03, 256 + -0x80, 0x15};
 
-        memory.loadData(data);
-        emulate(data);
+        memory.LoadData(data);
+        Emulate(data);
 
-        assertEquals(255, register.get(0));
-        assertEquals(0, register.get(0xF));
+        Assert.Equal(255, register.Get(0));
+        Assert.Equal(0, register.Get(0xF));
     }
 
-    @DisplayName("code 8XY6 Stores the least significant bit of VX in VF and then shifts VX to the right by 1.")
-    @Test
-    void shouldTestOpcode0x8XY6IfSumHasLeastSignificantBitOfOne() {
+    [Fact(DisplayName = "code 8XY6 Stores the least significant bit of VX in VF and then shifts VX to the right by 1.")]
+    void ShouldTestOpcode0x8XY6IfSumHasLeastSignificantBitOfOne() {
 
-        byte[] data = {0x60, 0x03, -0x80, 0x16};
+        byte[] data = {0x60, 0x03, 256 + -0x80, 0x16};
 
-        memory.loadData(data);
-        emulate(data);
+        memory.LoadData(data);
+        Emulate(data);
 
-        assertEquals(1, register.get(0));
-        assertEquals(1, register.get(0xF));
+        Assert.Equal(1, register.Get(0));
+        Assert.Equal(1, register.Get(0xF));
 
     }
 
-    @DisplayName("code 8XY6 Stores the least significant bit of VX in VF and then shifts VX to the right by 1.")
-    @Test
-    void shouldTestOpcode0x8XY6IfSumHasLeastSignificantBitOfZero() {
+    [Fact(DisplayName = "code 8XY6 Stores the least significant bit of VX in VF and then shifts VX to the right by 1.")]
+    void ShouldTestOpcode0x8XY6IfSumHasLeastSignificantBitOfZero() {
 
-        byte[] data = {0x60, 0x02, -0x80, 0x16};
+        byte[] data = {0x60, 0x02, 256 + -0x80, 0x16};
 
-        memory.loadData(data);
-        emulate(data);
+        memory.LoadData(data);
+        Emulate(data);
 
-        assertEquals(1, register.get(0));
-        assertEquals(0, register.get(0xF));
-
-    }
-
-    @DisplayName("code 8XY7 Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't.")
-    @Test
-    void shouldTestOpcode0x8XY7IfThereIsNoBorrowSetVFToOne() {
-
-        byte[] data = {0x60, 0x02, 0x61, 0x03, -0x80, 0x17};
-
-        memory.loadData(data);
-        emulate(data);
-
-        assertEquals(1, register.get(0));
-        assertEquals(1, register.get(0xF));
-    }
-
-    @DisplayName("code 8XY7 Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't.")
-    @Test
-    void shouldTestOpcode0x8XY7IfThereIsBorrowSetVFToZero() {
-
-        byte[] data = {0x60, 0x03, 0x61, 0x02, -0x80, 0x17};
-
-        memory.loadData(data);
-        emulate(data);
-
-        assertEquals(255, register.get(0));
-        assertEquals(0, register.get(0xF));
-    }
-
-    @DisplayName("code 8XY7 Stores the most significant bit of VX in VF and then shifts VX to the left by 1")
-    @Test
-    void shouldTestOpcode0x8XYEMSBShouldBeOne() {
-
-        byte[] data = {0x60, -0x01, -0x80, 0x0E};
-
-        memory.loadData(data);
-        emulate(data);
-
-        assertEquals(1, register.get(0xF));
-        assertEquals(254, register.get(0));
-    }
-
-    @DisplayName("code 8XY7 Stores the most significant bit of VX in VF and then shifts VX to the left by 1")
-    @Test
-    void shouldTestOpcode0x8XYEMSBShouldBeZero() {
-
-        byte[] data = {0x60, 0x01, -0x80, 0x0E};
-
-        memory.loadData(data);
-        emulate(data);
-
-        assertEquals(0, register.get(0xF));
-        assertEquals(2, register.get(0));
-    }
-
-    @DisplayName("code 9XY0 Skips the next instruction when VX doesn't equal VY")
-    @Test
-    void shouldTestOpcode0x9XY0SkipsNextInstruction() {
-
-        byte[] data = {0x60, 0x01, 0x61, 0x02, -0x70, 0x10};
-
-        memory.loadData(data);
-        emulate(data);
-
-        assertEquals(520, cpu.getPC());
-    }
-
-    @DisplayName("code 9XY0 Does not skip the next instruction when VX equal VY")
-    @Test
-    void shouldTestOpcode0x9XY0ShouldNotSkipsNextInstruction() {
-
-        byte[] data = {0x60, 0x01, 0x61, 0x01, -0x70, 0x10};
-
-        memory.loadData(data);
-        emulate(data);
-
-        assertEquals(518, cpu.getPC());
+        Assert.Equal(1, register.Get(0));
+        Assert.Equal(0, register.Get(0xF));
 
     }
 
-    @DisplayName("code ANNN Sets I to the address NNN")
-    @Test
-    void shouldTestOpcode0xANNNShouldSetItoNNN() {
+    [Fact(DisplayName = "code 8XY7 Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't.")]
+    void ShouldTestOpcode0x8XY7IfThereIsNoBorrowSetVFToOne() {
 
-        byte[] data = {-0x51, -0x01};
+        byte[] data = {0x60, 0x02, 0x61, 0x03, 256 + -0x80, 0x17};
 
-        memory.loadData(data);
-        emulate(data);
+        memory.LoadData(data);
+        Emulate(data);
 
-        assertEquals(4095, cpu.getI());
+        Assert.Equal(1, register.Get(0));
+        Assert.Equal(1, register.Get(0xF));
+    }
+
+    [Fact(DisplayName = "code 8XY7 Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't.")]
+    void ShouldTestOpcode0x8XY7IfThereIsBorrowSetVFToZero() {
+
+        byte[] data = {0x60, 0x03, 0x61, 0x02, 256 + -0x80, 0x17};
+
+        memory.LoadData(data);
+        Emulate(data);
+
+        Assert.Equal(255, register.Get(0));
+        Assert.Equal(0, register.Get(0xF));
+    }
+
+    [Fact(DisplayName = "code 8XY7 Stores the most significant bit of VX in VF and then shifts VX to the left by 1")]
+    void ShouldTestOpcode0x8XYEMSBShouldBeOne() {
+
+        byte[] data = {0x60, 256 + -0x01, 256 + -0x80, 0x0E};
+
+        memory.LoadData(data);
+        Emulate(data);
+
+        Assert.Equal(1, register.Get(0xF));
+        Assert.Equal(254, register.Get(0));
+    }
+
+    [Fact(DisplayName = "code 8XY7 Stores the most significant bit of VX in VF and then shifts VX to the left by 1")]
+    void ShouldTestOpcode0x8XYEMSBShouldBeZero() {
+
+        byte[] data = {0x60, 0x01, 256 + -0x80, 0x0E};
+
+        memory.LoadData(data);
+        Emulate(data);
+
+        Assert.Equal(0, register.Get(0xF));
+        Assert.Equal(2, register.Get(0));
+    }
+
+    [Fact(DisplayName = "code 9XY0 Skips the next instruction when VX doesn't equal VY")]
+    void ShouldTestOpcode0x9XY0SkipsNextInstruction() {
+
+        byte[] data = {0x60, 0x01, 0x61, 0x02, 256 + -0x70, 0x10};
+
+        memory.LoadData(data);
+        Emulate(data);
+
+        Assert.Equal(520, cpu.PC);
+    }
+
+    [Fact(DisplayName = "code 9XY0 Does not skip the next instruction when VX equal VY")]
+    void ShouldTestOpcode0x9XY0ShouldNotSkipsNextInstruction() {
+
+        byte[] data = {0x60, 0x01, 0x61, 0x01, 256 + -0x70, 0x10};
+
+        memory.LoadData(data);
+        Emulate(data);
+
+        Assert.Equal(518, cpu.PC);
 
     }
 
-    @DisplayName("code BNNN Jumps to the address NNN plus V0.")
-    @Test
-    void shouldTestOpcode0xBNNNShouldJumpToNNNPlusVZero() {
+    [Fact(DisplayName = "code ANNN Sets I to the address NNN")]
+    void ShouldTestOpcode0xANNNShouldSetItoNNN() {
 
-        byte[] data = {0x60, 0x01, -0x4E, 0x05};
+        byte[] data = {256 + -0x51, 256 + -0x01};
 
-        memory.loadData(data);
-        emulate(data);
+        memory.LoadData(data);
+        Emulate(data);
 
-        assertEquals(518, cpu.getPC());
-
-    }
-
-    @DisplayName("code CXNN Sets VX to the result of a bitwise and operation on a random number (Typically: 0 to 255) and NN.")
-    @Test
-    void shouldTestOpcode0xCXNNShouldSetVxToRandomNumberANDNN() {
-
-        byte[] data = { -0x40, 0x07 };
-
-        when(random.nextInt(anyInt())).thenReturn(85);
-
-        memory.loadData(data);
-        emulate(data);
-
-        assertEquals(5, register.get(0));
+        Assert.Equal(4095, cpu.I);
 
     }
 
-    @DisplayName("code FX15 Sets the delay timer to VX")
-    @Test
-    void shouldTestOpcodeFX15SetDelayTimerToVX() {
+    [Fact(DisplayName = "code BNNN Jumps to the address NNN plus V0.")]
+    void ShouldTestOpcode0xBNNNShouldJumpToNNNPlusVZero() {
 
-        byte[] data = { 0x60, 0x01, -0x10, 0x15 };
+        byte[] data = {0x60, 0x01, 256 + -0x4E, 0x05};
 
-        memory.loadData(data);
-        emulate(data);
+        memory.LoadData(data);
+        Emulate(data);
 
-        assertEquals(1, cpu.getDelayTimer());
-
-    }
-
-    @DisplayName("code FX18 Sets the sound timer to VX")
-    @Test
-    void shouldTestOpcodeFX18SetSoundTimerToVX() {
-
-        byte[] data = { 0x60, 0x01, -0x10, 0x18 };
-
-        memory.loadData(data);
-        emulate(data);
-
-        assertEquals(1, cpu.getSoundTimer());
+        Assert.Equal(518, cpu.PC);
 
     }
 
-    @DisplayName("code FX1E adds Vx to I")
-    @Test
-    void shouldTestOpcodeFX1EAddVxToI() {
+    // [Fact(DisplayName = "code CXNN Sets VX to the result of a bitwise and operation on a random number (Typically: 0 to 255) and NN.")]
+    // void ShouldTestOpcode0xCXNNShouldSetVxToRandomNumberANDNN() {
 
-        byte[] data = { 0x60, 0x01, -0x10, 0x1E };
+    //     byte[] data = { -0x40, 0x07 };
 
-        memory.loadData(data);
-        emulate(data);
+    //     when(random.nextInt(anyInt())).thenReturn(85);
 
-        assertEquals(1, cpu.getI());
+    //     memory.LoadData(data);
+    //     Emulate(data);
+
+    //     Assert.Equal(5, register.Get(0));
+
+    // }
+
+    [Fact(DisplayName = "code FX15 Sets the delay timer to VX")]
+    void ShouldTestOpcodeFX15SetDelayTimerToVX() {
+
+        byte[] data = { 0x60, 0x01, 256 + -0x10, 0x15 };
+
+        memory.LoadData(data);
+        Emulate(data);
+
+        Assert.Equal(1, cpu.DelayTimer);
 
     }
 
-    @DisplayName("code FX07 set Vx to the delayTimer")
-    @Test
-    void shouldTestOpcodeFX07SetVxToTheDelayTimer() {
+    [Fact(DisplayName = "code FX18 Sets the sound timer to VX")]
+    void ShouldTestOpcodeFX18SetSoundTimerToVX() {
 
-        cpu.setDelayTimer(1);
-        byte[] data = { -0x10, 0x07 };
+        byte[] data = { 0x60, 0x01, 256 + -0x10, 0x18 };
 
-        memory.loadData(data);
-        emulate(data);
+        memory.LoadData(data);
+        Emulate(data);
 
-        assertEquals(1, register.get(0));
+        Assert.Equal(1, cpu.SoundTimer);
+
+    }
+
+    [Fact(DisplayName = "code FX1E adds Vx to I")]
+    void ShouldTestOpcodeFX1EAddVxToI() {
+
+        byte[] data = { 0x60, 0x01, 256 + -0x10, 0x1E };
+
+        memory.LoadData(data);
+        Emulate(data);
+
+        Assert.Equal(1, cpu.I);
+
+    }
+
+    [Fact(DisplayName = "code FX07 set Vx to the delayTimer")]
+    void ShouldTestOpcodeFX07SetVxToTheDelayTimer() {
+
+        cpu.DelayTimer = 1;
+        byte[] data = { 256 + -0x10, 0x07 };
+
+        memory.LoadData(data);
+        Emulate(data);
+
+        Assert.Equal(1, register.Get(0));
 
     }
 

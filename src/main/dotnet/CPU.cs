@@ -300,12 +300,12 @@ public class CPU
         }
     }
 
-    public int DelayTimer => delayTimer;
+    public int DelayTimer { get { return delayTimer;} set { delayTimer = value; } }
     public bool DrawFlag => drawFlag;
 
-    public int SoundTimer { get { return soundTimer; } }
+    public int SoundTimer => soundTimer;
 
     public int PC { get { return pc; } }
 
-    public int I { get { return I; } }
+    public int I { get { return i; } }
 }
