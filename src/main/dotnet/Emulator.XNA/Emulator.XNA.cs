@@ -80,17 +80,11 @@ public class Emulator : Game
         }        
     }
 
-
-    // private void KeyPressed(Chip8.KeyEventArgs e) {
-    //     keyboard.OnKeyPressed(e.GetKeyCode());
-    // }
-
-    // private void KeyReleased(KeyEventArgs e) {
-    //     keyboard.OnKeyReleased(e.GetKeyCode());
-    // }
-
     protected override void Draw(GameTime gameTime)
-    {        
-        base.Draw(gameTime);
+    {
+        if(this.cpu.DrawFlag) {    
+            base.Draw(gameTime);
+            this.cpu.DrawFlag = false;
+        }
     }
 }
