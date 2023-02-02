@@ -33,7 +33,7 @@ public class EmulatorTest
 
         Emulate(data);
 
-        Assert.True(cpu.DrawFlag);
+        Assert.Equal(514, cpu.PC);
     }
 
     [Fact(DisplayName = "code 3XNN Should skip the next instruction if VX == NN")]

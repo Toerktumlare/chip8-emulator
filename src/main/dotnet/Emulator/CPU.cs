@@ -104,8 +104,26 @@ public class CPU
                 break;
 
             case 0x7000:
-                register.Apply(x, () => ));
+                register.Apply(x, vx => vx + opcode & 0x00FF);
                 pc += 2;
+                break;
+
+            case 0x8000:{
+                switch(opcode & 0x000F) {
+                    case (0x0000):
+                        register.Set(x, register.Get(y));
+                        pc += 2;
+                        break;
+
+                    case (0x0001):
+                        register.Apply(x, vx => vx | register.Get(y));
+                        pc += 2;
+                        break;
+
+                    default:
+                        break;
+                    }
+                }
                 break;
 
             default:
