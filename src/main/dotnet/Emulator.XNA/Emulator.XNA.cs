@@ -19,15 +19,19 @@ public class Emulator : Game
     public Emulator(byte[] gameData)
     {
         graphics = new GraphicsDeviceManager(this);
-        graphics.IsFullScreen = false;
+        graphics.IsFullScreen = true;
         graphics.PreferredBackBufferHeight = 320;
         graphics.PreferredBackBufferWidth = 640;
+        graphics.SynchronizeWithVerticalRetrace = false;
+        graphics.ApplyChanges();
         IsMouseVisible = true;
 
         this.keyboard = new Chip8.Keyboard();
         
         memory = new Chip8.Memory();
         memory.LoadData(gameData);
+
+        this.IsFixedTimeStep = false;
     }
 
     protected override void Initialize()
@@ -67,7 +71,6 @@ public class Emulator : Game
         TestKey(Input.Keys.V, oldState, state);
 
         cpu.EmulateCycle();
-
         base.Update(gameTime);
         oldState = state;
     }

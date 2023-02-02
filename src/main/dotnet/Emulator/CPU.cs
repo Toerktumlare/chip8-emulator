@@ -309,8 +309,8 @@ public class CPU
         }
     }
 
-    public int DelayTimer { get { return delayTimer;} set { delayTimer = value; } }
-    public bool DrawFlag => drawFlag;
+    public int DelayTimer { get { return delayTimer; } set { delayTimer = value; } }
+    public bool DrawFlag { get { return drawFlag; } set { drawFlag = value; } }
 
     public int SoundTimer => soundTimer;
 
