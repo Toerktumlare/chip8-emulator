@@ -195,18 +195,46 @@ public class CPU
                 break;
             
             case 0xD000: // Draws a sprite at coordinate (VX, VY) that has a width of 8 pixels and a height of N pixels. Each row of 8 pixels is read as bit-coded starting from memory location I; I value doesn’t change after the execution of this instruction. As described above, VF is set to 1 if any screen pixels are flipped from set to unset when the sprite is drawn, and to 0 if that doesn’t happen
-                // TODO: Implement
+                int height = opcode & 0x000F;
+
+                register.Set(0xF, 0);
+
+                for (int yLine = 0; yLine < height; yLine++) {
+                    int pixelValue = memory.GetByte(I + yLine);
+
+                    for (int xLine = 0; xLine < 8; xLine++) {
+
+                        if (Utils.GetBitValue(pixelValue, xLine) != 0) {
+
+                            int xCoord = (register.Get(x) + xLine);
+                            int yCoord = (register.Get(y) + yLine) ;
+
+                            if(xCoord >= screen.Width )
+                                xCoord %= screen.Width;
+
+                            if(yCoord >= screen.Height)
+                                yCoord %= screen.Height;
+
+                         if (screen.GetPixel(xCoord, yCoord) == 1)
+                                register.Set(0xF, 1);
+
+                            screen.SetPixel(xCoord, yCoord);
+                        }
+                    }
+                }
+                drawFlag = true;
+                pc += 2;
                 break;
             
             case 0xE000: {
                 switch (opcode & 0x00FF) {
                     
                     case 0x009E: // Skips the next instruction if the key stored in VX is pressed. (Usually the next instruction is a jump to skip a code block)
-                        // TODO: Implement
+                        pc += keyboard.IsPressed(register.Get(x)) ? 4 : 2;
                         break;
 
                     case 0x00A1: // Skips the next instruction if the key stored in VX isn't pressed. (Usually the next instruction is a jump to skip a code block)
-                        // TODO: Implement
+                        pc += keyboard.IsPressed(register.Get(x)) ? 2 : 4;
                         break;
 
                     default:
@@ -248,19 +276,27 @@ public class CPU
                         break;
 
                     case 0x0029: // Sets I to the location of the sprite for the character in VX. Characters 0-F (in hexadecimal) are represented by a 4x5 font.
-                        // TODO: Implement
+                        i = register.Get(x) * 5;
+                        pc += 2;
                         break;
 
-                    case 0x0033: // Stores the binary-coded decimal representation of VX, with the most significant of three digits at the address in I, the middle digit at I plus 1, and the least significant digit at I plus 2. (In other words, take the decimal representation of VX, place the hundreds digit in memory at location in I, the tens digit at location I+1, and the ones digit at location I+2.)
-                        // TODO: Implement
+                    case 0x0033: // VX, with the most significant of three digits at the address in I, the middle digit at I plus 1, and the least significant digit at I plus 2. (In other words, take the decimal representation of VX, place the hundreds digit in memory at location in I, the tens digit at location I+1, and the ones digit at location I+2.)
+                        memory.SetByte(i, register.Get(x) / 100);
+                        memory.SetByte(i + 1, (register.Get(x) % 100) / 10);
+                        memory.SetByte(i + 2, register.Get(x) % 10);
+                        pc += 2;
                         break;
 
                     case 0x0055: // Stores V0 to VX (including VX) in memory starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.
-                        // TODO: Implement
+                        for(int p = 0; p <= x; p++)
+                            memory.SetByte(i + p, register.Get(p));
+                        pc += 2;
                         break;
 
                     case 0x0065: // Fills V0 to VX (including VX) with values from memory starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.
-                        // TODO: Implement
+                        for(int p = 0; p <= x; p++)
+                            register.Set(p, memory.GetByte(i + p) & 0xFF);
+                        pc += 2;
                         break;
 
                     default:
