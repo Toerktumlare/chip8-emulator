@@ -42,7 +42,7 @@ public class Emulator : Game
         
         var random = new System.Random();
         var register = new Chip8.Register();
-        this.cpu = new Chip8.CPU(this.memory, register, random, this.keyboard, screen);
+        this.cpu = new Chip8.CPU(memory, register, random, keyboard, screen);
 
         GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap; 
         base.Initialize();
@@ -58,7 +58,7 @@ public class Emulator : Game
         }
 
         HandleInput();
-        
+
         cpu.EmulateCycle();
         base.Update(gameTime);
         updateCounter++;

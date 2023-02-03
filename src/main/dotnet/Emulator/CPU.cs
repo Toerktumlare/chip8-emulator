@@ -47,6 +47,9 @@ public class CPU
 
         int x = (opcode & 0x0F00) >> 8;
         int y = (opcode & 0x00F0) >> 4;
+        int N = (opcode & 0x000F);
+        int NN = (opcode & 0x00FF);
+        int NNN = (opcode & 0x0FFF);
 
         pc += 2;
 
@@ -68,22 +71,22 @@ public class CPU
         switch(opcode & 0xF000) {
  
             case 0x1000: // Jumps to address NNN.
-                pc = opcode & 0x0FFF;
+                pc = NNN;
                 break;
  
             case 0x2000: // Calls subroutine at NNN.
                 stack.Push(pc);
-                pc = opcode & 0x0FFF;
+                pc = NNN;
                 break; 
 
             case 0x3000: // Skips the next instruction if VX equals NN. (Usually the next instruction is a jump to skip a code block)
-                if(register.Get(x) == (opcode & 0x00FF)) {
+                if(register.Get(x) == NN) {
                     pc += 2;
                 }
                 break;
 
             case 0x4000: // Skips the next instruction if VX doesn't equal NN. (Usually the next instruction is a jump to skip a code block)
-                if(register.Get(x) != (opcode & 0x00FF)) {
+                if(register.Get(x) != NN) {
                     pc += 2;
                 }
                 break;
@@ -95,15 +98,15 @@ public class CPU
                 break;
 
             case 0x6000: // Sets VX to NN.
-                register.Set(x, opcode & 0x00FF);
+                register.Set(x, NN);
                 break;
 
             case 0x7000: // Adds NN to VX. (Carry flag is not changed)
-                register.Apply(x, vx => vx + opcode & 0x00FF);
+                register.Apply(x, vx => vx + NN);
                 break;
 
             case 0x8000:{
-                switch(opcode & 0x000F) {
+                switch(N) {
                     case 0x0000: // Sets VX to the value of VY.
                         register.Set(x, register.Get(y));
                         break;
@@ -166,19 +169,19 @@ public class CPU
                 break;
 
             case 0xA000: // Sets I to the address NNN.
-                i = opcode & 0x0FFF;
+                i = NNN;
                 break;
 
             case 0xB000: // Jumps to the address NNN plus V0..
-                pc = (register.Get(0) + opcode & 0x0FFF) & 0x0FFF;
+                pc = (register.Get(0) + NNN) & 0x0FFF;
                 break;
 
             case 0xC000: // Sets VX to the result of a bitwise and operation on a random number (Typically: 0 to 255) and NN.
-                register.Set(x, (random.Next() % 256) & opcode & 0xFF);
+                register.Set(x, (random.Next() % 256) & NN);
                 break;
             
             case 0xD000: // Draws a sprite at coordinate (VX, VY) that has a width of 8 pixels and a height of N pixels. Each row of 8 pixels is read as bit-coded starting from memory location I; I value doesn’t change after the execution of this instruction. As described above, VF is set to 1 if any screen pixels are flipped from set to unset when the sprite is drawn, and to 0 if that doesn’t happen
-                int height = opcode & 0x000F;
+                int height = N;
 
                 register.Set(0xF, 0);
 
@@ -209,13 +212,13 @@ public class CPU
                 break;
             
             case 0xE000: {
-                switch (opcode & 0x00FF) {
+                switch (NN) {
                     
-                    case 0x009E: // Skips the next instruction if the key stored in VX is pressed. (Usually the next instruction is a jump to skip a code block)
+                    case 0x9E: // Skips the next instruction if the key stored in VX is pressed. (Usually the next instruction is a jump to skip a code block)
                         pc += keyboard.IsPressed(register.Get(x)) ? 4 : 2;
                         break;
 
-                    case 0x00A1: // Skips the next instruction if the key stored in VX isn't pressed. (Usually the next instruction is a jump to skip a code block)
+                    case 0xA1: // Skips the next instruction if the key stored in VX isn't pressed. (Usually the next instruction is a jump to skip a code block)
                         pc += keyboard.IsPressed(register.Get(x)) ? 2 : 4;
                         break;
 
@@ -226,13 +229,13 @@ public class CPU
             }
 
             case 0xF000: {
-                switch (opcode & 0x00FF) {
+                switch (NN) {
 
-                    case 0x0007: // Sets VX to the value of the delay timer.
+                    case 0x07: // Sets VX to the value of the delay timer.
                         register.Set(x, delayTimer & 0xFF);
                         break;
 
-                    case 0x000A: // A key press is awaited, and then stored in VX. (Blocking Operation. All instruction halted until next key event)
+                    case 0x0A: // A key press is awaited, and then stored in VX. (Blocking Operation. All instruction halted until next key event)
                         for (int i = 0; i < keyboard.GetKeys().Length; i++) {
                             if(keyboard.IsPressed(i)){
                                 register.Set(x, i);
@@ -240,34 +243,34 @@ public class CPU
                         }
                         break;
 
-                    case 0x0015: // Sets the delay timer to VX.
+                    case 0x15: // Sets the delay timer to VX.
                         delayTimer = register.Get(x) & 0xFF;
                         break;
 
-                    case 0x0018: // Sets the sound timer to VX.
+                    case 0x18: // Sets the sound timer to VX.
                         soundTimer = register.Get(x) & 0xFF;
                         break;
 
-                    case 0x001E: // Adds VX to I.
+                    case 0x1E: // Adds VX to I.
                         i += (register.Get(x) & 0xFF);
                         break;
 
-                    case 0x0029: // Sets I to the location of the sprite for the character in VX. Characters 0-F (in hexadecimal) are represented by a 4x5 font.
+                    case 0x29: // Sets I to the location of the sprite for the character in VX. Characters 0-F (in hexadecimal) are represented by a 4x5 font.
                         i = 0x50 + register.Get(x) * 5;
                         break;
 
-                    case 0x0033: // VX, with the most significant of three digits at the address in I, the middle digit at I plus 1, and the least significant digit at I plus 2. (In other words, take the decimal representation of VX, place the hundreds digit in memory at location in I, the tens digit at location I+1, and the ones digit at location I+2.)
+                    case 0x33: // VX, with the most significant of three digits at the address in I, the middle digit at I plus 1, and the least significant digit at I plus 2. (In other words, take the decimal representation of VX, place the hundreds digit in memory at location in I, the tens digit at location I+1, and the ones digit at location I+2.)
                         memory.SetByte(i, register.Get(x) / 100);
                         memory.SetByte(i + 1, (register.Get(x) % 100) / 10);
                         memory.SetByte(i + 2, register.Get(x) % 10);
                         break;
 
-                    case 0x0055: // Stores V0 to VX (including VX) in memory starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.
+                    case 0x55: // Stores V0 to VX (including VX) in memory starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.
                         for(int p = 0; p <= x; p++)
                             memory.SetByte(i + p, register.Get(p));
                         break;
 
-                    case 0x0065: // Fills V0 to VX (including VX) with values from memory starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.
+                    case 0x65: // Fills V0 to VX (including VX) with values from memory starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.
                         for(int p = 0; p <= x; p++)
                             register.Set(p, memory.GetByte(i + p) & 0xFF);
                         break;
