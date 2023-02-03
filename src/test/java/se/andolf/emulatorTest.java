@@ -300,7 +300,7 @@ class emulatorTest {
         assertEquals(0, register.get(0xF));
     }
 
-    @DisplayName("code 8XY7 Stores the most significant bit of VX in VF and then shifts VX to the left by 1")
+    @DisplayName("code 8XYE Stores the most significant bit of VX in VF and then shifts VX to the left by 1")
     @Test
     void shouldTestOpcode0x8XYEMSBShouldBeOne() {
 
@@ -313,7 +313,7 @@ class emulatorTest {
         assertEquals(254, register.get(0));
     }
 
-    @DisplayName("code 8XY7 Stores the most significant bit of VX in VF and then shifts VX to the left by 1")
+    @DisplayName("code 8XYE Stores the most significant bit of VX in VF and then shifts VX to the left by 1")
     @Test
     void shouldTestOpcode0x8XYEMSBShouldBeZero() {
 

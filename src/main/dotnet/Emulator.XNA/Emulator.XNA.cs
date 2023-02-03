@@ -19,7 +19,7 @@ public class Emulator : Game
     public Emulator(byte[] gameData)
     {
         graphics = new GraphicsDeviceManager(this);
-        graphics.IsFullScreen = true;
+        graphics.IsFullScreen = false;
         graphics.PreferredBackBufferHeight = 320;
         graphics.PreferredBackBufferWidth = 640;
         graphics.SynchronizeWithVerticalRetrace = false;
@@ -51,7 +51,14 @@ public class Emulator : Game
     {
         if (Input.GamePad.GetState(PlayerIndex.One).Buttons.Back == Input.ButtonState.Pressed || Input.Keyboard.GetState().IsKeyDown(Input.Keys.Escape))
             Exit();
+
+        HandleInput();
         
+        cpu.EmulateCycle();
+        base.Update(gameTime);
+    }
+
+    private void HandleInput() {
         var state = Input.Keyboard.GetState();
         TestKey(Input.Keys.D1, oldState, state);
         TestKey(Input.Keys.D2, oldState, state);
@@ -69,9 +76,6 @@ public class Emulator : Game
         TestKey(Input.Keys.X, oldState, state);
         TestKey(Input.Keys.C, oldState, state);
         TestKey(Input.Keys.V, oldState, state);
-
-        cpu.EmulateCycle();
-        base.Update(gameTime);
         oldState = state;
     }
 
@@ -88,6 +92,10 @@ public class Emulator : Game
         if(this.cpu.DrawFlag) {    
             base.Draw(gameTime);
             this.cpu.DrawFlag = false;
+        }
+
+        if(this.cpu.DelayTimer > 0) {
+            this.cpu.DelayTimer -= 1;
         }
     }
 }

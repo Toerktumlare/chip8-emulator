@@ -127,10 +127,11 @@ public class EmulatorTest
 
     [Fact(DisplayName = "code 8XY0 Sets VX to the value of VY.")]
     void ShouldTestOpcode0x8XY0() {
-        byte[] data = {0x60, 0x01, 0x80, 0x20};
+        byte[] data = {0x60, 0x01, 0x62, 0x02, 0x80, 0x20};
 
         memory.LoadData(data);
 
+        cpu.EmulateCycle();
         cpu.EmulateCycle();
         Assert.Equal("1", register.Get(0).ToString("X"));
 
@@ -264,7 +265,7 @@ public class EmulatorTest
         Assert.Equal(0, register.Get(0xF));
     }
 
-    [Fact(DisplayName = "code 8XY7 Stores the most significant bit of VX in VF and then shifts VX to the left by 1")]
+    [Fact(DisplayName = "code 8XYE Stores the most significant bit of VX in VF and then shifts VX to the left by 1")]
     void ShouldTestOpcode0x8XYEMSBShouldBeOne() {
 
         byte[] data = {0x60, 0xFF, 0x80, 0x0E};
@@ -276,7 +277,7 @@ public class EmulatorTest
         Assert.Equal(254, register.Get(0));
     }
 
-    [Fact(DisplayName = "code 8XY7 Stores the most significant bit of VX in VF and then shifts VX to the left by 1")]
+    [Fact(DisplayName = "code 8XYE Stores the most significant bit of VX in VF and then shifts VX to the left by 1")]
     void ShouldTestOpcode0x8XYEMSBShouldBeZero() {
 
         byte[] data = {0x60, 0x01, 0x80, 0x0E};
