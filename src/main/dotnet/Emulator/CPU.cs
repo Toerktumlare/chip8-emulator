@@ -120,6 +120,16 @@ public class CPU
                         pc += 2;
                         break;
 
+                    case (0x0002):
+                        register.Apply(x, vx => vx & register.Get(y));
+                        pc += 2;
+                        break;
+
+                    case (0x0003):
+                        register.Apply(x, vx => vx ^ register.Get(y));
+                        pc += 2;
+                        break;
+
                     default:
                         break;
                     }
