@@ -118,7 +118,7 @@ public class CPU
         switch (opcode & 0xF00F) {
 
             case 0x8000:
-                register.Set(x, y);
+                register.Set(x, register.Get(y));
                 pc += 2;
                 break;
 
