@@ -5,7 +5,7 @@ public class Memory
     private int[] memory = new int[4096];
 
     public Memory() {
-        System.Array.Copy(Keyboard.FONTS, 0, memory, 0, 80);
+        System.Array.Copy(Keyboard.FONTS, 0, memory, 0x50, 80);
     }
 
     public void LoadData(byte[] data) {

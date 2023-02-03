@@ -16,14 +16,14 @@ public class Emulator : Game
     private readonly Chip8.Keyboard keyboard;
     private readonly Chip8.Memory memory;
     private Input.KeyboardState oldState;
+    private double updateCounter = 0, drawCounter = 0;
     public Emulator(byte[] gameData)
     {
         graphics = new GraphicsDeviceManager(this);
-        graphics.IsFullScreen = false;
+        graphics.IsFullScreen = true;
         graphics.PreferredBackBufferHeight = 320;
         graphics.PreferredBackBufferWidth = 640;
         graphics.SynchronizeWithVerticalRetrace = false;
-        graphics.ApplyChanges();
         IsMouseVisible = true;
 
         this.keyboard = new Chip8.Keyboard();
@@ -32,6 +32,7 @@ public class Emulator : Game
         memory.LoadData(gameData);
 
         this.IsFixedTimeStep = false;
+        graphics.ApplyChanges();
     }
 
     protected override void Initialize()
@@ -49,13 +50,18 @@ public class Emulator : Game
 
     protected override void Update(GameTime gameTime)
     {
-        if (Input.GamePad.GetState(PlayerIndex.One).Buttons.Back == Input.ButtonState.Pressed || Input.Keyboard.GetState().IsKeyDown(Input.Keys.Escape))
+        if (Input.GamePad.GetState(PlayerIndex.One).Buttons.Back == Input.ButtonState.Pressed || Input.Keyboard.GetState().IsKeyDown(Input.Keys.Escape)) {
+            System.Console.WriteLine($"Updates: {updateCounter}");
+            System.Console.WriteLine($"Draws: {drawCounter}");
+            System.Console.WriteLine($"Instructions: {cpu.InstructionsCounter}");
             Exit();
+        }
 
         HandleInput();
         
         cpu.EmulateCycle();
         base.Update(gameTime);
+        updateCounter++;
     }
 
     private void HandleInput() {
@@ -93,9 +99,6 @@ public class Emulator : Game
             base.Draw(gameTime);
             this.cpu.DrawFlag = false;
         }
-
-        if(this.cpu.DelayTimer > 0) {
-            this.cpu.DelayTimer -= 1;
-        }
+        drawCounter++;
     }
 }
