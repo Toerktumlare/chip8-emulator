@@ -102,7 +102,7 @@ public class CPU
                 break;
 
             case 0x7000: // Adds NN to VX. (Carry flag is not changed)
-                register.Apply(x, vx => vx + NN);
+                register.Apply(x, vx => (vx + NN) &0xFF);
                 break;
 
             case 0x8000:{
@@ -165,7 +165,7 @@ public class CPU
                 break;
 
             case 0x9000: // Skips the next instruction if VX doesn't equal VY. (Usually the next instruction is a jump to skip a code block)
-                pc += register.Get(x) != register.Get(y) ? 4 : 2;
+                pc += register.Get(x) != register.Get(y) ? 2 : 0;
                 break;
 
             case 0xA000: // Sets I to the address NNN.
@@ -215,11 +215,11 @@ public class CPU
                 switch (NN) {
                     
                     case 0x9E: // Skips the next instruction if the key stored in VX is pressed. (Usually the next instruction is a jump to skip a code block)
-                        pc += keyboard.IsPressed(register.Get(x)) ? 4 : 2;
+                        pc += keyboard.IsPressed(register.Get(x)) ? 2 : 0;
                         break;
 
                     case 0xA1: // Skips the next instruction if the key stored in VX isn't pressed. (Usually the next instruction is a jump to skip a code block)
-                        pc += keyboard.IsPressed(register.Get(x)) ? 2 : 4;
+                        pc += keyboard.IsPressed(register.Get(x)) ? 0 : 2;
                         break;
 
                     default:

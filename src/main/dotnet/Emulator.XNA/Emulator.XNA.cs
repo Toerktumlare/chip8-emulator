@@ -20,7 +20,7 @@ public class Emulator : Game
     public Emulator(byte[] gameData)
     {
         graphics = new GraphicsDeviceManager(this);
-        graphics.IsFullScreen = true;
+        graphics.IsFullScreen = false;
         graphics.PreferredBackBufferHeight = 320;
         graphics.PreferredBackBufferWidth = 640;
         graphics.SynchronizeWithVerticalRetrace = false;
@@ -32,6 +32,7 @@ public class Emulator : Game
         memory.LoadData(gameData);
 
         this.IsFixedTimeStep = false;
+
         graphics.ApplyChanges();
     }
 
@@ -66,27 +67,14 @@ public class Emulator : Game
 
     private void HandleInput() {
         var state = Input.Keyboard.GetState();
-        TestKey(Input.Keys.D1, oldState, state);
-        TestKey(Input.Keys.D2, oldState, state);
-        TestKey(Input.Keys.D3, oldState, state);
-        TestKey(Input.Keys.D4, oldState, state);
-        TestKey(Input.Keys.Q, oldState, state);
-        TestKey(Input.Keys.W, oldState, state);
-        TestKey(Input.Keys.E, oldState, state);
-        TestKey(Input.Keys.R, oldState, state);
-        TestKey(Input.Keys.A, oldState, state);
-        TestKey(Input.Keys.S, oldState, state);
-        TestKey(Input.Keys.D, oldState, state);
-        TestKey(Input.Keys.F, oldState, state);
-        TestKey(Input.Keys.Z, oldState, state);
-        TestKey(Input.Keys.X, oldState, state);
-        TestKey(Input.Keys.C, oldState, state);
-        TestKey(Input.Keys.V, oldState, state);
+        foreach(var key in oldState.GetPressedKeys()) {
+            TestKey(key, oldState, state);
+        }
         oldState = state;
     }
 
     private void TestKey(Input.Keys key, Input.KeyboardState oldState, Input.KeyboardState newState) {
-        if(oldState.IsKeyUp(key) && newState.IsKeyDown(key)) {
+        if(newState.IsKeyDown(key)) {
             keyboard.OnKeyPressed((int)key);
         } else if(oldState.IsKeyDown(key) && newState.IsKeyUp(key)) {
             keyboard.OnKeyReleased((int)key);
