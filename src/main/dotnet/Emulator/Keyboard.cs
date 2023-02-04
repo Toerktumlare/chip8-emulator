@@ -1,10 +1,10 @@
 namespace Chip8;
 
-public class Keyboard
+public class Keyboard : IKeyboard
 {
    private bool[] keys = new bool[16];
 
-    public static int[] FONTS = {
+    public static byte[] FONTS = {
             0xF0, 0x90, 0x90, 0x90, 0xF0, // 0      0
             0x20, 0x60, 0x20, 0x20, 0x70, // 1      5
             0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2     10

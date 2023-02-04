@@ -115,11 +115,11 @@ FX65|	MEM|	reg_load(Vx,&I)|	Fills V0 to VX (including VX) with values from memor
 The original implementation of the Chip-8 language used a 64x32-pixel monochrome display with this format:
 ```
 +-------------------+
-|(0,0)        (0,64)|
+|(0,0)        (63,0)|
 |                   |
 |                   |
 |                   |
-|(64,0)      (64,64)|
+|(0,31)      (63,31)|
 +-------------------+
 ```
 

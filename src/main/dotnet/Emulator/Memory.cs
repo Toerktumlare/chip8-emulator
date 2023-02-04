@@ -2,24 +2,24 @@ namespace Chip8;
 
 public class Memory 
 {
-    private int[] memory = new int[4096];
+    private byte[] memory = new byte[4096];
 
     public Memory() {
-        System.Array.Copy(Keyboard.FONTS, 0, memory, 0, 80);
+        System.Array.Copy(Keyboard.FONTS, 0, memory, 0x50, 80);
     }
 
     public void LoadData(byte[] data) {
         for (int i = 0; i < data.Length; i++) {
-            SetByte(i + 512, (data[i] & 0xFF));
+            SetByte(i + 512, (byte)(data[i] & 0xFF));
         }
 
     }
 
-    public int GetByte(int index) {
+    public byte GetByte(int index) {
         return memory[index];
     }
 
-    public void SetByte(int index, int value) {
+    public void SetByte(int index, byte value) {
         memory[index] = value;
     }
 
