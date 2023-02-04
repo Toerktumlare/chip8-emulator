@@ -51,7 +51,6 @@ public class CPU {
 
             case 0x00EE:
                 pc = stack.pop();
-                drawFlag = true;
                 pc += 2;
                 break;
         }
@@ -113,7 +112,7 @@ public class CPU {
         switch (opcode & 0xF00F) {
 
             case 0x8000:
-                register.set(x, y);
+                register.set(x, register.get(y));
                 pc += 2;
                 break;
 
