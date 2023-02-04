@@ -47,7 +47,7 @@ class emulatorTest {
 
         emulate(data);
 
-        assertTrue(cpu.getDrawFlag());
+        assertEquals(514, cpu.getPC());
     }
 
     @DisplayName("code 3XNN Should skip the next instruction if VX == NN")
