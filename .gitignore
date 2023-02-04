@@ -4,3 +4,6 @@
 *.iml
 *.ipr
 .DS_Store
+
+**/bin/*
+**/obj/*
