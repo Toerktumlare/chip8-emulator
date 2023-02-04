@@ -47,6 +47,8 @@ public class CPU
 
         int x = (opcode & 0x0F00) >> 8;
         int y = (opcode & 0x00F0) >> 4;
+        int VX = register.Get(x);
+        int VY = register.Get(y);
         int N = (opcode & 0x000F);
         int NN = (opcode & 0x00FF);
         int NNN = (opcode & 0x0FFF);
@@ -80,19 +82,19 @@ public class CPU
                 break; 
 
             case 0x3000: // Skips the next instruction if VX equals NN. (Usually the next instruction is a jump to skip a code block)
-                if(register.Get(x) == NN) {
+                if(VX == NN) {
                     pc += 2;
                 }
                 break;
 
             case 0x4000: // Skips the next instruction if VX doesn't equal NN. (Usually the next instruction is a jump to skip a code block)
-                if(register.Get(x) != NN) {
+                if(VX != NN) {
                     pc += 2;
                 }
                 break;
 
             case 0x5000: // Skips the next instruction if VX equals VY. (Usually the next instruction is a jump to skip a code block)
-                if(register.Get(x) == register.Get(y)) {
+                if(VX == VY) {
                     pc += 2;
                 }
                 break;
@@ -102,61 +104,53 @@ public class CPU
                 break;
 
             case 0x7000: // Adds NN to VX. (Carry flag is not changed)
-                register.Apply(x, vx => (vx + NN) &0xFF);
+                register.Apply(x, vx => (vx + NN) & 0xFF);
                 break;
 
             case 0x8000:{
                 switch(N) {
                     case 0x0000: // Sets VX to the value of VY.
-                        register.Set(x, register.Get(y));
+                        register.Set(x, VY);
                         break;
 
                     case 0x0001: //	Sets VX to VX or VY. (Bitwise OR operation)
-                        register.Apply(x, vx => vx | register.Get(y));
+                        register.Apply(x, vx => vx | VY);
                         break;
 
                     case 0x0002: // Sets VX to VX and VY. (Bitwise AND operation)
-                        register.Apply(x, vx => vx & register.Get(y));
+                        register.Apply(x, vx => vx & VY);
                         break;
 
                     case 0x0003: // Sets VX to VX xor VY.
-                        register.Apply(x, vx => vx ^ register.Get(y));
+                        register.Apply(x, vx => vx ^ VY);
                         break;
 
                     case 0x0004: // Adds VY to VX. VF is set to 1 when there's a carry, and to 0 when there isn't.
                         register.Apply(x, vx => {
-                            var sum = vx + register.Get(y);
+                            var sum = vx + VY;
                             register.Set(0xF, sum > 0xFF ? 1 : 0);
                             return sum & 0xFF;
                         });
                         break;
 
                     case 0x0005: // VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
-                        register.Apply(x, vx => {
-                            register.Set(0xF, register.Get(y) > vx ? 0 : 1);
-                            return (vx - register.Get(y)) & 0xFF;
-                        });
+                        register.Set(0xF, VY > VX ? 0 : 1);
+                        register.Apply(x, vx => (vx - VY) & 0xFF );
                         break;
 
                     case 0x0006: // Stores the least significant bit of VX in VF and then shifts VX to the right by 1.[2]
-                        register.Apply(x, vx => {
-                            register.Set(0xF, vx & 0x1);
-                            return vx >> 1;
-                        });
+                        register.Set(0xF, VX & 0x1);
+                        register.Apply(x, vx => vx >> 1);
                         break;
 
                     case 0x0007: // Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
-                        register.Apply(x, vx => {
-                            register.Set(0xF, vx > register.Get(y) ? 0 : 1);
-                            return (register.Get(y) - vx) & 0xFF;
-                        });
+                        register.Set(0xF, VX > VY ? 0 : 1);
+                        register.Apply(x, vx => (VY - vx) & 0xFF );
                         break;
 
                     case 0x000E: // Stores the most significant bit of VX in VF and then shifts VX to the left by 1.[3]
-                        register.Apply(x, vx => {
-                            register.Set(0xF, (vx & 0x80) > 0 ? 1 : 0);
-                            return (vx << 1) & 0xFF;
-                        });
+                        register.Set(0xF, (VX & 0x80) > 0 ? 1 : 0);
+                        register.Apply(x, vx => (vx << 1) & 0xFF );
                         break;
                     default:
                         break;
@@ -165,7 +159,7 @@ public class CPU
                 break;
 
             case 0x9000: // Skips the next instruction if VX doesn't equal VY. (Usually the next instruction is a jump to skip a code block)
-                pc += register.Get(x) != register.Get(y) ? 2 : 0;
+                pc += VX != VY ? 2 : 0;
                 break;
 
             case 0xA000: // Sets I to the address NNN.
@@ -192,8 +186,8 @@ public class CPU
 
                         if (Utils.GetBitValue(pixelValue, xLine) != 0) {
 
-                            int xCoord = (register.Get(x) + xLine);
-                            int yCoord = (register.Get(y) + yLine) ;
+                            int xCoord = (VX + xLine);
+                            int yCoord = (VY + yLine) ;
 
                             if(xCoord >= screen.Width )
                                 xCoord %= screen.Width;
@@ -215,11 +209,11 @@ public class CPU
                 switch (NN) {
                     
                     case 0x9E: // Skips the next instruction if the key stored in VX is pressed. (Usually the next instruction is a jump to skip a code block)
-                        pc += keyboard.IsPressed(register.Get(x)) ? 2 : 0;
+                        pc += keyboard.IsPressed(VX) ? 2 : 0;
                         break;
 
                     case 0xA1: // Skips the next instruction if the key stored in VX isn't pressed. (Usually the next instruction is a jump to skip a code block)
-                        pc += keyboard.IsPressed(register.Get(x)) ? 0 : 2;
+                        pc += keyboard.IsPressed(VX) ? 0 : 2;
                         break;
 
                     default:
@@ -239,30 +233,32 @@ public class CPU
                         for (int i = 0; i < keyboard.GetKeys().Length; i++) {
                             if(keyboard.IsPressed(i)){
                                 register.Set(x, i);
+                                break;
                             }
                         }
+                        pc -= 2;
                         break;
 
                     case 0x15: // Sets the delay timer to VX.
-                        delayTimer = register.Get(x) & 0xFF;
+                        delayTimer = VX & 0xFF;
                         break;
 
                     case 0x18: // Sets the sound timer to VX.
-                        soundTimer = register.Get(x) & 0xFF;
+                        soundTimer = VX & 0xFF;
                         break;
 
                     case 0x1E: // Adds VX to I.
-                        i += (register.Get(x) & 0xFF);
+                        i += (VX & 0xFF);
                         break;
 
                     case 0x29: // Sets I to the location of the sprite for the character in VX. Characters 0-F (in hexadecimal) are represented by a 4x5 font.
-                        i = 0x50 + register.Get(x) * 5;
+                        i = 0x50 + VX * 5;
                         break;
 
                     case 0x33: // VX, with the most significant of three digits at the address in I, the middle digit at I plus 1, and the least significant digit at I plus 2. (In other words, take the decimal representation of VX, place the hundreds digit in memory at location in I, the tens digit at location I+1, and the ones digit at location I+2.)
-                        memory.SetByte(i, register.Get(x) / 100);
-                        memory.SetByte(i + 1, (register.Get(x) % 100) / 10);
-                        memory.SetByte(i + 2, register.Get(x) % 10);
+                        memory.SetByte(i, VX / 100);
+                        memory.SetByte(i + 1, (VX % 100) / 10);
+                        memory.SetByte(i + 2, VX % 10);
                         break;
 
                     case 0x55: // Stores V0 to VX (including VX) in memory starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.
