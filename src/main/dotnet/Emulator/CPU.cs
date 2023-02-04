@@ -109,6 +109,7 @@ public class CPU
 
             case 0x8000:{
                 switch(N) {
+                    
                     case 0x0000: // Sets VX to the value of VY.
                         register.Set(x, VY);
                         break;
