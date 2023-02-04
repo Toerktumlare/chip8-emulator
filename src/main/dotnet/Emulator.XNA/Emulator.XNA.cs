@@ -13,14 +13,14 @@ public class Emulator : Game
     private GraphicsDeviceManager graphics;
  
     private Chip8.CPU cpu;
-    private readonly Chip8.Keyboard keyboard;
+    private readonly Chip8.IKeyboard keyboard;
     private readonly Chip8.Memory memory;
     private Input.KeyboardState oldState;
     private double updateCounter = 0, drawCounter = 0;
     public Emulator(byte[] gameData)
     {
         graphics = new GraphicsDeviceManager(this);
-        graphics.IsFullScreen = false;
+        graphics.IsFullScreen = true;
         graphics.PreferredBackBufferHeight = 320;
         graphics.PreferredBackBufferWidth = 640;
         graphics.SynchronizeWithVerticalRetrace = false;

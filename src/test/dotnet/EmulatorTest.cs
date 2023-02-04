@@ -11,7 +11,9 @@ public class EmulatorTest
         memory = new Memory();
         register = new Register();
         random = new Random();
-        cpu = new Chip8.CPU(memory, register, random, null, null);
+        var screen = new ScreenMock();
+        var keyboard = new KeyboardMock();
+        cpu = new Chip8.CPU(memory, register, random, keyboard, screen);
     }
 
     [Fact(DisplayName = "code 1XXX jumps to address NNN")]
@@ -359,7 +361,6 @@ public class EmulatorTest
         Emulate(data);
 
         Assert.Equal(1, cpu.DelayTimer);
-
     }
 
     [Fact(DisplayName = "code FX18 Sets the sound timer to VX")]
@@ -371,7 +372,6 @@ public class EmulatorTest
         Emulate(data);
 
         Assert.Equal(1, cpu.SoundTimer);
-
     }
 
     [Fact(DisplayName = "code FX1E adds Vx to I")]

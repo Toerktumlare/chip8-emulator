@@ -1,20 +1,11 @@
 namespace Chip8;
 
-public interface IScreen {
-
-    int Width { get; }
-    int Height { get; }
-    void Clear();
-    void SetPixel(int xCoord, int yCoord);
-    uint GetPixel(int xCoord, int yCoord);
-}
-
 public class CPU 
 {
     private readonly Memory memory;
     private readonly Register register;
     private readonly Random random;
-    private readonly Keyboard keyboard;
+    private readonly IKeyboard keyboard;
     private readonly IScreen screen;
     private Stack<int> stack;
 
@@ -22,10 +13,10 @@ public class CPU
 
     private int i;
     private int pc;
-    private int delayTimer, soundTimer;
+    private byte delayTimer, soundTimer;
     public int InstructionsCounter;
 
-    public CPU(Memory memory, Register register, Random random, Keyboard keyboard, IScreen screen) {
+    public CPU(Memory memory, Register register, Random random, IKeyboard keyboard, IScreen screen) {
         this.memory = memory;
         this.register = register;
         this.random = random;
@@ -47,10 +38,10 @@ public class CPU
 
         int x = (opcode & 0x0F00) >> 8;
         int y = (opcode & 0x00F0) >> 4;
-        int VX = register.Get(x);
-        int VY = register.Get(y);
-        int N = (opcode & 0x000F);
-        int NN = (opcode & 0x00FF);
+        byte VX = register.Get(x);
+        byte VY = register.Get(y);
+        byte N = (byte)(opcode & 0x000F);
+        byte NN = (byte)(opcode & 0x00FF);
         int NNN = (opcode & 0x0FFF);
 
         pc += 2;
@@ -104,7 +95,7 @@ public class CPU
                 break;
 
             case 0x7000: // Adds NN to VX. (Carry flag is not changed)
-                register.Apply(x, vx => (vx + NN) & 0xFF);
+                register.Apply(x, vx => (byte)((vx + NN) & 0xFF));
                 break;
 
             case 0x8000:{
@@ -115,43 +106,43 @@ public class CPU
                         break;
 
                     case 0x0001: //	Sets VX to VX or VY. (Bitwise OR operation)
-                        register.Apply(x, vx => vx | VY);
+                        register.Apply(x, vx => (byte)(vx | VY));
                         break;
 
                     case 0x0002: // Sets VX to VX and VY. (Bitwise AND operation)
-                        register.Apply(x, vx => vx & VY);
+                        register.Apply(x, vx => (byte)(vx & VY));
                         break;
 
                     case 0x0003: // Sets VX to VX xor VY.
-                        register.Apply(x, vx => vx ^ VY);
+                        register.Apply(x, vx => (byte)(vx ^ VY));
                         break;
 
                     case 0x0004: // Adds VY to VX. VF is set to 1 when there's a carry, and to 0 when there isn't.
                         register.Apply(x, vx => {
                             var sum = vx + VY;
-                            register.Set(0xF, sum > 0xFF ? 1 : 0);
-                            return sum & 0xFF;
+                            register.Set(0xF, (byte)(sum > 0xFF ? 1 : 0));
+                            return (byte)(sum & 0xFF);
                         });
                         break;
 
                     case 0x0005: // VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
-                        register.Set(0xF, VY > VX ? 0 : 1);
-                        register.Apply(x, vx => (vx - VY) & 0xFF );
+                        register.Set(0xF, (byte)(VY > VX ? 0 : 1));
+                        register.Apply(x, vx => (byte)((vx - VY) & 0xFF));
                         break;
 
                     case 0x0006: // Stores the least significant bit of VX in VF and then shifts VX to the right by 1.[2]
-                        register.Set(0xF, VX & 0x1);
-                        register.Apply(x, vx => vx >> 1);
+                        register.Set(0xF, (byte)(VX & 0x1));
+                        register.Apply(x, vx => (byte)(vx >> 1));
                         break;
 
                     case 0x0007: // Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
-                        register.Set(0xF, VX > VY ? 0 : 1);
-                        register.Apply(x, vx => (VY - vx) & 0xFF );
+                        register.Set(0xF, (byte)(VX > VY ? 0 : 1));
+                        register.Apply(x, vx => (byte)((VY - vx) & 0xFF));
                         break;
 
                     case 0x000E: // Stores the most significant bit of VX in VF and then shifts VX to the left by 1.[3]
-                        register.Set(0xF, (VX & 0x80) > 0 ? 1 : 0);
-                        register.Apply(x, vx => (vx << 1) & 0xFF );
+                        register.Set(0xF, (byte)((VX & 0x80) > 0 ? 1 : 0));
+                        register.Apply(x, vx => (byte)((vx << 1) & 0xFF));
                         break;
                     default:
                         break;
@@ -172,7 +163,7 @@ public class CPU
                 break;
 
             case 0xC000: // Sets VX to the result of a bitwise and operation on a random number (Typically: 0 to 255) and NN.
-                register.Set(x, (random.Next() % 256) & NN);
+                register.Set(x, (byte)((random.Next() % 256) & NN));
                 break;
             
             case 0xD000: // Draws a sprite at coordinate (VX, VY) that has a width of 8 pixels and a height of N pixels. Each row of 8 pixels is read as bit-coded starting from memory location I; I value doesn’t change after the execution of this instruction. As described above, VF is set to 1 if any screen pixels are flipped from set to unset when the sprite is drawn, and to 0 if that doesn’t happen
@@ -227,13 +218,13 @@ public class CPU
                 switch (NN) {
 
                     case 0x07: // Sets VX to the value of the delay timer.
-                        register.Set(x, delayTimer & 0xFF);
+                        register.Set(x, (byte)(delayTimer & 0xFF));
                         break;
 
                     case 0x0A: // A key press is awaited, and then stored in VX. (Blocking Operation. All instruction halted until next key event)
                         for (int i = 0; i < keyboard.GetKeys().Length; i++) {
                             if(keyboard.IsPressed(i)){
-                                register.Set(x, i);
+                                register.Set(x, (byte)i);
                                 break;
                             }
                         }
@@ -241,12 +232,12 @@ public class CPU
                         break;
 
                     case 0x15: // Sets the delay timer to VX.
-                        delayTimer = VX & 0xFF;
-                        break;
+                        delayTimer = (byte)(VX & 0xFF);
+                        return;
 
                     case 0x18: // Sets the sound timer to VX.
-                        soundTimer = VX & 0xFF;
-                        break;
+                        soundTimer = (byte)(VX & 0xFF);
+                        return;
 
                     case 0x1E: // Adds VX to I.
                         i += (VX & 0xFF);
@@ -257,19 +248,19 @@ public class CPU
                         break;
 
                     case 0x33: // VX, with the most significant of three digits at the address in I, the middle digit at I plus 1, and the least significant digit at I plus 2. (In other words, take the decimal representation of VX, place the hundreds digit in memory at location in I, the tens digit at location I+1, and the ones digit at location I+2.)
-                        memory.SetByte(i, VX / 100);
-                        memory.SetByte(i + 1, (VX % 100) / 10);
-                        memory.SetByte(i + 2, VX % 10);
+                        memory.SetByte(i, (Byte)(VX / 100));
+                        memory.SetByte(i + 1, (Byte)((VX % 100) / 10));
+                        memory.SetByte(i + 2, (Byte)(VX % 10));
                         break;
 
                     case 0x55: // Stores V0 to VX (including VX) in memory starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.
                         for(int p = 0; p <= x; p++)
-                            memory.SetByte(i + p, register.Get(p));
+                            memory.SetByte(i + p, (Byte)register.Get(p));
                         break;
 
                     case 0x65: // Fills V0 to VX (including VX) with values from memory starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.
                         for(int p = 0; p <= x; p++)
-                            register.Set(p, memory.GetByte(i + p) & 0xFF);
+                            register.Set(p, (byte)(memory.GetByte(i + p) & 0xFF));
                         break;
 
                     default:
@@ -291,10 +282,10 @@ public class CPU
         }
     }
 
-    public int DelayTimer { get { return delayTimer; } set { delayTimer = value; } }
+    public byte DelayTimer { get { return delayTimer; } set { delayTimer = value; } }
     public bool DrawFlag { get { return drawFlag; } set { drawFlag = value; } }
 
-    public int SoundTimer => soundTimer;
+    public byte SoundTimer => soundTimer;
 
     public int PC { get { return pc; } }
 
