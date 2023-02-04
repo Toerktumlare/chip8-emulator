@@ -34,7 +34,7 @@ public class CPU
     {
         InstructionsCounter++;
         int opcode = memory.GetOpcode(pc);
-        //Console.WriteLine(Utils.GetHex(opcode));
+        //Console.WriteLine(opcode.ToString("X"));
 
         int x = (opcode & 0x0F00) >> 8;
         int y = (opcode & 0x00F0) >> 4;
