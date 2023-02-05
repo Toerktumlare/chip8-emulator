@@ -207,11 +207,11 @@ public class CPU {
                             int xCoord = (register.get(x) + xLine);
                             int yCoord = (register.get(y) + yLine) ;
 
-                            if(xCoord >= screen.getWidth() )
-                                xCoord %= screen.getWidth();
+                            if(xCoord >= screen.getWidth() / Emulator.SCALE )
+                                xCoord %= screen.getWidth() / Emulator.SCALE;
 
-                            if(yCoord >= screen.getHeight())
-                                yCoord %= screen.getHeight();
+                            if(yCoord >= screen.getHeight() / Emulator.SCALE )
+                                yCoord %= screen.getHeight() / Emulator.SCALE;
 
                             if (screen.getPixel(xCoord, yCoord) == 1)
                                 register.set(0xF, 1);
