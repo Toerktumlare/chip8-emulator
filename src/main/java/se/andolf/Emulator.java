@@ -11,7 +11,7 @@ public class Emulator implements Runnable, KeyListener {
     private static final int WIDTH = 64;
     private static final int HEIGHT = 32;
 
-    private static final int SCALE = 10;
+    public static final int SCALE = 10;
     private final CPU cpu;
 
     private Thread thread;
