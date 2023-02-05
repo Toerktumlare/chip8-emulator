@@ -28,16 +28,16 @@ public class Keyboard {
     public void onKeyPressed(int keyCode) {
         switch (keyCode) {
             case KeyEvent.VK_1:
-                keys[0] = true;
-                break;
-            case KeyEvent.VK_2:
                 keys[1] = true;
                 break;
-            case KeyEvent.VK_3:
+            case KeyEvent.VK_2:
                 keys[2] = true;
                 break;
-            case KeyEvent.VK_4:
+            case KeyEvent.VK_3:
                 keys[3] = true;
+                break;
+            case KeyEvent.VK_4:
+                keys[0xA] = true;
                 break;
             case KeyEvent.VK_Q:
                 keys[4] = true;
@@ -49,31 +49,31 @@ public class Keyboard {
                 keys[6] = true;
                 break;
             case KeyEvent.VK_R:
-                keys[7] = true;
+                keys[0xD] = true;
                 break;
             case KeyEvent.VK_A:
-                keys[8] = true;
+                keys[7] = true;
                 break;
             case KeyEvent.VK_S:
-                keys[9] = true;
+                keys[8] = true;
                 break;
             case KeyEvent.VK_D:
-                keys[10] = true;
+                keys[9] = true;
                 break;
             case KeyEvent.VK_F:
-                keys[11] = true;
+                keys[0xE] = true;
                 break;
             case KeyEvent.VK_Z:
-                keys[12] = true;
+                keys[0xA] = true;
                 break;
             case KeyEvent.VK_X:
-                keys[13] = true;
+                keys[0] = true;
                 break;
             case KeyEvent.VK_C:
-                keys[14] = true;
+                keys[0xB] = true;
                 break;
             case KeyEvent.VK_V:
-                keys[15] = true;
+                keys[0xF] = true;
                 break;
             default:
                 break;
@@ -83,16 +83,16 @@ public class Keyboard {
     public void onKeyReleased(int keyCode) {
         switch (keyCode) {
             case KeyEvent.VK_1:
-                keys[0] = false;
-                break;
-            case KeyEvent.VK_2:
                 keys[1] = false;
                 break;
-            case KeyEvent.VK_3:
+            case KeyEvent.VK_2:
                 keys[2] = false;
                 break;
-            case KeyEvent.VK_4:
+            case KeyEvent.VK_3:
                 keys[3] = false;
+                break;
+            case KeyEvent.VK_4:
+                keys[0xA] = false;
                 break;
             case KeyEvent.VK_Q:
                 keys[4] = false;
@@ -104,31 +104,31 @@ public class Keyboard {
                 keys[6] = false;
                 break;
             case KeyEvent.VK_R:
-                keys[7] = false;
+                keys[0xD] = false;
                 break;
             case KeyEvent.VK_A:
-                keys[8] = false;
+                keys[7] = false;
                 break;
             case KeyEvent.VK_S:
-                keys[9] = false;
+                keys[8] = false;
                 break;
             case KeyEvent.VK_D:
-                keys[10] = false;
+                keys[9] = false;
                 break;
             case KeyEvent.VK_F:
-                keys[11] = false;
+                keys[0xE] = false;
                 break;
             case KeyEvent.VK_Z:
-                keys[12] = false;
+                keys[0xA] = false;
                 break;
             case KeyEvent.VK_X:
-                keys[13] = false;
+                keys[0] = false;
                 break;
             case KeyEvent.VK_C:
-                keys[14] = false;
+                keys[0xB] = false;
                 break;
             case KeyEvent.VK_V:
-                keys[15] = false;
+                keys[0xF] = false;
                 break;
             default:
                 break;
